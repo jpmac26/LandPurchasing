@@ -1,0 +1,17 @@
+name: LandPurchasing
+main: com.m0pt0pmatt.LandPurchasing.LandPurchasing
+version: 0.1
+softdepend: [WorldEdit, WorldGuard, Vault, PluginUtils]
+commands:
+    buyland:
+        description: buy your current selection.
+        usage: /buyland (plot name)
+    sellland:
+        description: sell a plot of land.
+        usage: /sellland (plot name)
+    listland:
+        description: list all of the plots you own.
+        usage: /listland
+    help:
+        description: get help
+        usage: /help
