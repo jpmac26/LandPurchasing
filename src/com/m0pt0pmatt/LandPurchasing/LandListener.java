@@ -77,15 +77,12 @@ public class LandListener implements Listener{
 			if (!blockSet.equals(pistonSet)){
 				
 				for (String regionName: blockSet){
-					
-					System.out.println(regionName);
-					
+										
 					ProtectedRegion region = regionManager.getRegion(regionName);
 					State state = region.getFlag(new StateFlag("outside-pistons", false));
 					
 					if (state == null || state.equals(State.DENY)){
 						event.setCancelled(true);
-						System.out.println("piston stopped");
 						return;
 					}
 				}
@@ -96,13 +93,9 @@ public class LandListener implements Listener{
 	
 	@EventHandler
 	public void onPistonRetract(BlockPistonRetractEvent event){
-		
-		System.out.println("fired");
-		
+				
 		if (!event.isSticky()) return;
-		
-		System.out.println("sticky");
-		
+				
 		World world = event.getBlock().getWorld();
 		
 		//get the region manager for the world
@@ -115,40 +108,19 @@ public class LandListener implements Listener{
 		Vector v = new Vector(retractedBlockLocation.getX(), retractedBlockLocation.getY(), retractedBlockLocation.getZ());
 		Set<String> newSet = new HashSet<String> (regionManager.getApplicableRegionsIDs(v));
 		
-		System.out.println(v);
-		
 		v = new Vector(pistonLocation.getX(), pistonLocation.getY(), pistonLocation.getZ());
 		Set<String> oldSet = new HashSet<String> (regionManager.getApplicableRegionsIDs(v));
 		
-		System.out.println(v);
-		
-		System.out.println("new");
-		for (String regionName: newSet){
-			System.out.println(regionName);
-		}
-		System.out.println("old");
-		for (String regionName: oldSet){
-			System.out.println(regionName);
-		}
-		
 		if (!newSet.equals(oldSet)){
-			System.out.println("not smae");
 			
 			for (String regionName: newSet){
 				
 				ProtectedRegion region = regionManager.getRegion(regionName);
 				
-				for (Entry<Flag<?>,Object> entry: region.getFlags().entrySet()){
-					System.out.println(entry);
-				}
-				
 				Object state = region.getFlag(CustomFlag.OUTSIDEPISTONS.getFlag().getFlag());
-				
-				System.out.println(state);
-				
+								
 				if (state == null || state.equals(State.DENY)){
 					event.setCancelled(true);
-					System.out.println("piston stopped");
 					return;
 				}
 			}
@@ -156,23 +128,13 @@ public class LandListener implements Listener{
 				
 				ProtectedRegion region = regionManager.getRegion(regionName);
 				
-				for (Entry<Flag<?>,Object> entry: region.getFlags().entrySet()){
-					System.out.println(entry);
-				}
-				
 				Object state = region.getFlag(CustomFlag.OUTSIDEPISTONS.getFlag().getFlag());
-				
-				System.out.println(state);
-				
+								
 				if (state == null || state.equals(State.DENY)){
 					event.setCancelled(true);
-					System.out.println("piston stopped");
 					return;
 				}
 			}
-		}
-		else{
-			System.out.println(" smae");
 		}
 		
 	}

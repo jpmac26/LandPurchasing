@@ -132,20 +132,26 @@ public class FlagManager {
 		}
 		
 		//check if the player can afford changing this flag
-		if (!LandPurchasing.economy.has(sender.getName(), cost)){
-			sender.sendMessage("You do not have the required funds. Changing this flag costs $" + cost);
+		if (!LandPurchasing.economy.has(sender.getName(), (int)cost)){
+			sender.sendMessage("You do not have the required funds. Changing this flag costs $" + (int)cost);
+			return false;
 		}
 		
 		//withdraw the funds from the player to the server
-		LandPurchasing.economy.withdrawPlayer(sender.getName(), cost);
-		LandPurchasing.economy.depositPlayer("__Server", cost);
+		LandPurchasing.economy.withdrawPlayer(sender.getName(), (int)cost);
+		LandPurchasing.economy.depositPlayer("__Server", (int)cost);
 		
 		//special cases come first, before the flag is set
+		
+		//if pvp is being changed, update greeting and farewell messages
 		if (flag.getName().equalsIgnoreCase(DefaultFlag.PVP.getName())){
 			
 			if (value.equalsIgnoreCase("allow")){
 				//required warning upon entry/exit of pvp region
 				String s = region.getFlag(DefaultFlag.GREET_MESSAGE);
+				if (s.startsWith(PVP_WARNING)){
+					s = s.substring(PVP_WARNING.length());
+				}
 				if(s != null){
 					assignFlag(region,DefaultFlag.GREET_MESSAGE,PVP_WARNING + s);
 				}
@@ -154,6 +160,9 @@ public class FlagManager {
 				}
 				
 				s = region.getFlag(DefaultFlag.FAREWELL_MESSAGE);
+				if (s.startsWith(PVP_LEAVE)){
+					s = s.substring(PVP_LEAVE.length());
+				}
 				if(s != null){
 					assignFlag(region,DefaultFlag.FAREWELL_MESSAGE,PVP_LEAVE + s);
 				}
@@ -169,6 +178,9 @@ public class FlagManager {
 			}
 						
 		}
+		
+		//if greeting or farewell messages are being changed, keep the pvp warning if pvp is allowed
+		//TODO:
 		
 		//set the flag
 		

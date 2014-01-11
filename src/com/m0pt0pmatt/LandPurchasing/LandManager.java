@@ -60,6 +60,8 @@ public class LandManager {
 		DefaultDomain d = region.getMembers();
 		d.addPlayer(memberName);
 		region.setMembers(d);
+		
+		sender.sendMessage(memberName + " is now a member of the plot " + regionName);
 	}
 	
 	/**
@@ -108,6 +110,8 @@ public class LandManager {
 		//remove the member from the plot
 		d.removePlayer(memberName);
 		region.setMembers(d);
+		
+		sender.sendMessage(memberName + " is no longer a member of the plot " + regionName);
 	}
 	
 	/**

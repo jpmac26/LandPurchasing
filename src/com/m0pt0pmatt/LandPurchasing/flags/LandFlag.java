@@ -16,6 +16,7 @@ public class LandFlag {
 	public LandFlag(Flag<?> flag, boolean costScales, double cost){
 		this.flag = flag;
 		this.cost = cost;
+		this.costScales = costScales;
 	}
 	
 	public LandFlag(Flag<?> flag){
