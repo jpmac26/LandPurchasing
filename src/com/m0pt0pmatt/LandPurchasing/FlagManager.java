@@ -10,6 +10,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
 import com.m0pt0pmatt.LandPurchasing.flags.LandFlag;
+import com.sk89q.worldguard.protection.databases.ProtectionDatabaseException;
 import com.sk89q.worldguard.protection.flags.BooleanFlag;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.flags.Flag;
@@ -211,7 +212,12 @@ public class FlagManager {
 		}
 		
 		sender.sendMessage("You have successfully set flag " + flagName + " to " + value + " for the plot " + plotName + " for a cost of $" + cost);
-		
+		try {
+			rm.save();
+		} catch (ProtectionDatabaseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return true;	
 	}
 	
