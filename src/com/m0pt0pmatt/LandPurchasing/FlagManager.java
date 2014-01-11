@@ -54,8 +54,9 @@ public class FlagManager {
 		flags.put(DefaultFlag.USE.getName(), new LandFlag(DefaultFlag.USE, false, 0));
 
 		//possibly misunderstood flags, message won't be sent to owner alone
-		flags.put(DefaultFlag.NOTIFY_ENTER.getName(), new LandFlag(DefaultFlag.NOTIFY_ENTER, false, 0));
-		flags.put(DefaultFlag.NOTIFY_LEAVE.getName(), new LandFlag(DefaultFlag.NOTIFY_LEAVE, false, 0));
+		//TODO:make these work how we want. Going to require custom flags
+		//flags.put(DefaultFlag.NOTIFY_ENTER.getName(), new LandFlag(DefaultFlag.NOTIFY_ENTER, false, 0));
+		//flags.put(DefaultFlag.NOTIFY_LEAVE.getName(), new LandFlag(DefaultFlag.NOTIFY_LEAVE, false, 0));
 		
 		//string flags
 		flags.put(DefaultFlag.GREET_MESSAGE.getName(), new LandFlag(DefaultFlag.GREET_MESSAGE, false, 1000));
