@@ -2,6 +2,7 @@ package com.m0pt0pmatt.LandPurchasing;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.bukkit.Location;
@@ -12,7 +13,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.BlockPistonRetractEvent;
 
+import com.m0pt0pmatt.LandPurchasing.flags.CustomFlag;
 import com.sk89q.worldedit.Vector;
+import com.sk89q.worldguard.protection.flags.Flag;
 import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.sk89q.worldguard.protection.flags.StateFlag.State;
 import com.sk89q.worldguard.protection.managers.RegionManager;
@@ -134,7 +137,30 @@ public class LandListener implements Listener{
 			for (String regionName: newSet){
 				
 				ProtectedRegion region = regionManager.getRegion(regionName);
-				State state = region.getFlag(new StateFlag("outside-pistons", false));
+				
+				for (Entry<Flag<?>,Object> entry: region.getFlags().entrySet()){
+					System.out.println(entry);
+				}
+				
+				Object state = region.getFlag(CustomFlag.OUTSIDEPISTONS.getFlag().getFlag());
+				
+				System.out.println(state);
+				
+				if (state == null || state.equals(State.DENY)){
+					event.setCancelled(true);
+					System.out.println("piston stopped");
+					return;
+				}
+			}
+			for (String regionName: oldSet){
+				
+				ProtectedRegion region = regionManager.getRegion(regionName);
+				
+				for (Entry<Flag<?>,Object> entry: region.getFlags().entrySet()){
+					System.out.println(entry);
+				}
+				
+				Object state = region.getFlag(CustomFlag.OUTSIDEPISTONS.getFlag().getFlag());
 				
 				System.out.println(state);
 				

@@ -9,6 +9,7 @@ import java.util.Map;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
+import com.m0pt0pmatt.LandPurchasing.flags.CustomFlag;
 import com.m0pt0pmatt.LandPurchasing.flags.LandFlag;
 import com.sk89q.worldguard.protection.databases.ProtectionDatabaseException;
 import com.sk89q.worldguard.protection.flags.BooleanFlag;
@@ -61,7 +62,7 @@ public class FlagManager {
 		flags.put(DefaultFlag.FAREWELL_MESSAGE.getName(), new LandFlag(DefaultFlag.FAREWELL_MESSAGE, false, 1000));
 		
 		//custom flags
-		flags.put("outside-pistons", new LandFlag(new StateFlag("outside-pistons", true), false, 0));
+		flags.put(CustomFlag.OUTSIDEPISTONS.getFlag().getFlag().getName(),CustomFlag.OUTSIDEPISTONS.getFlag());
 	}
 	
 	public void setDefaultFlags(ProtectedRegion region){
@@ -72,7 +73,8 @@ public class FlagManager {
 		region.setFlag(DefaultFlag.TNT, StateFlag.State.DENY);
 		region.setFlag(DefaultFlag.FIRE_SPREAD, StateFlag.State.DENY);
 		region.setFlag(DefaultFlag.GHAST_FIREBALL, StateFlag.State.DENY);
-		region.setFlag(DefaultFlag.CHEST_ACCESS, StateFlag.State.ALLOW);	
+		region.setFlag(DefaultFlag.CHEST_ACCESS, StateFlag.State.ALLOW);
+		region.setFlag((StateFlag)CustomFlag.OUTSIDEPISTONS.getFlag().getFlag(), StateFlag.State.DENY);	
 	}
 	
 	/**
@@ -140,21 +142,30 @@ public class FlagManager {
 		
 		//special cases come first, before the flag is set
 		if (flag.getName().equalsIgnoreCase(DefaultFlag.PVP.getName())){
-			//required warning upon entry/exit of pvp region
-			String s = region.getFlag(DefaultFlag.GREET_MESSAGE);
-			if(s != null){
-				assignFlag(region,DefaultFlag.GREET_MESSAGE,PVP_WARNING + s);
-			}
-			else {
-				assignFlag(region,DefaultFlag.GREET_MESSAGE,PVP_WARNING);
-			}
 			
-			s = region.getFlag(DefaultFlag.FAREWELL_MESSAGE);
-			if(s != null){
-				assignFlag(region,DefaultFlag.FAREWELL_MESSAGE,PVP_LEAVE + s);
+			if (value.equalsIgnoreCase("allow")){
+				//required warning upon entry/exit of pvp region
+				String s = region.getFlag(DefaultFlag.GREET_MESSAGE);
+				if(s != null){
+					assignFlag(region,DefaultFlag.GREET_MESSAGE,PVP_WARNING + s);
+				}
+				else {
+					assignFlag(region,DefaultFlag.GREET_MESSAGE,PVP_WARNING);
+				}
+				
+				s = region.getFlag(DefaultFlag.FAREWELL_MESSAGE);
+				if(s != null){
+					assignFlag(region,DefaultFlag.FAREWELL_MESSAGE,PVP_LEAVE + s);
+				}
+				else {
+					assignFlag(region,DefaultFlag.FAREWELL_MESSAGE,PVP_LEAVE);
+				}
 			}
-			else {
-				assignFlag(region,DefaultFlag.FAREWELL_MESSAGE,PVP_LEAVE);
+			else if (value.equalsIgnoreCase("deny")){
+				String s = region.getFlag(DefaultFlag.GREET_MESSAGE);
+				assignFlag(region,DefaultFlag.GREET_MESSAGE,s.substring(PVP_WARNING.length()));
+				s = region.getFlag(DefaultFlag.FAREWELL_MESSAGE);
+				assignFlag(region,DefaultFlag.FAREWELL_MESSAGE,s.substring(PVP_LEAVE.length()));
 			}
 						
 		}
