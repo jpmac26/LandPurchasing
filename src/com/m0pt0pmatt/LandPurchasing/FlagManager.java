@@ -17,7 +17,6 @@ import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.sk89q.worldguard.protection.flags.StateFlag.State;
 import com.sk89q.worldguard.protection.flags.StringFlag;
 import com.sk89q.worldguard.protection.managers.RegionManager;
-import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 /**
@@ -64,7 +63,7 @@ public class FlagManager {
 		flags.put("outside-pistons", new LandFlag(new StateFlag("outside-pistons", true), false, 0));
 	}
 	
-	public void setDefaultFlags(ProtectedCuboidRegion region){
+	public void setDefaultFlags(ProtectedRegion region){
 		region.setFlag(DefaultFlag.MOB_DAMAGE, StateFlag.State.DENY);
 		region.setFlag(DefaultFlag.MOB_SPAWNING, StateFlag.State.DENY);
 		region.setFlag(DefaultFlag.CREEPER_EXPLOSION, StateFlag.State.DENY);

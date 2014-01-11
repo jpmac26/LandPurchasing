@@ -10,8 +10,6 @@ import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.bukkit.selections.Selection;
 import com.sk89q.worldguard.domains.DefaultDomain;
-import com.sk89q.worldguard.protection.flags.DefaultFlag;
-import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
@@ -416,13 +414,7 @@ public class LandManager {
 		ProtectedRegion region = new ProtectedCuboidRegion(name, b1, b2);
 		
 		//set proper flags
-		region.setFlag(DefaultFlag.MOB_DAMAGE, StateFlag.State.DENY);
-		region.setFlag(DefaultFlag.MOB_SPAWNING, StateFlag.State.DENY);
-		region.setFlag(DefaultFlag.CREEPER_EXPLOSION, StateFlag.State.DENY);
-		region.setFlag(DefaultFlag.ENDER_BUILD, StateFlag.State.DENY);
-		region.setFlag(DefaultFlag.TNT, StateFlag.State.DENY);
-		region.setFlag(DefaultFlag.FIRE_SPREAD, StateFlag.State.DENY);
-		region.setFlag(DefaultFlag.GHAST_FIREBALL, StateFlag.State.DENY);
+		LandPurchasing.flagManager.setDefaultFlags(region);
 		
 		//add the new region to WorldGuard
 		rm.addRegion(region);
