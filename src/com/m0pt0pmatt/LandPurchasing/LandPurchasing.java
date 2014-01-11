@@ -12,34 +12,69 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 
+/**
+ * LandPurchasing is a plugin which allows players to purchase custom plots of protected land
+ * LandPurchasing uses WorldGuard as its backend.
+ * 
+ * @author Matthew Broomfield and Lucas Stuyvesant
+ */
 public class LandPurchasing extends JavaPlugin{
 
-	public static FlagManager flagManager = null;
+	/**
+	 * The LandManager performs creation, deletion, and permission operations on
+	 * plots of land
+	 */
 	public static LandManager landManager = null;
+	
+	/**
+	 * The FlagManager performs flag changing operations on plots of land
+	 */
+	public static FlagManager flagManager = null;
+	
+	/**
+	 * Land listener adds extra functionality to land plots
+	 */
+	public static LandListener landListener = null;
+	
+	/**
+	 * The Vault Economy
+	 */
 	public static Economy economy = null;
 	
 	/**
-	 * WorldGuard Plugin
+	 * The WorldGuard hook
 	 */
 	public static WorldGuardPlugin wgplugin = null;
 	
 	/**
-	 * WorldEdit Plugin
+	 * The WorldEdit hook
 	 */
 	public static WorldEditPlugin weplugin = null;
 	
+	/**
+	 * Initialize components of LandPurchasing
+	 */
 	public void onLoad(){
+		
 		//set up the landmanager
 		landManager = new LandManager();
 		
 		//set up active flags management
 		flagManager = new FlagManager();
+		
+		//set up land listener
+		landListener = new LandListener();
+		
 	}
 	
+	/**
+	 * Hook into other plugins
+	 */
 	public void onEnable(){
 		weplugin = getWorldEdit();
 		wgplugin = getWorldGuard();
 		setupEconomy();
+		Bukkit.getPluginManager().registerEvents(landListener, this);
 	}
 	
 	/**
@@ -86,64 +121,30 @@ public class LandPurchasing extends JavaPlugin{
         return (economy != null);
     }
 	
+	/**
+	 * Handle land-based commands
+	 * Current list of commands are:
+	 * 	/buyland [plot_name]
+	 * 	/sellland [plot_name]
+	 * 	/listland
+	 * 	/flagland [plot_name] [flag_name] [flag_state]
+	 *	/addmember [plot_name] [player_name]
+	 *	/removemember [plot_name] [player_name]
+	 * 	/addowner [plot_name] [player_name]
+	 * 	/removemember [plot_name] [player_name]
+	 */
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args){
-		if(cmd.getName().equalsIgnoreCase("addMember")){
-			
-			if (args.length != 2){
-				sender.sendMessage("Wrong number of arguments.");
-				return false;
-			}
-			else{
-				landManager.addMember(sender, args[0], args[1]);
-			}
-			return true;
-		}
-		if(cmd.getName().equalsIgnoreCase("removeMember")){
-			
-			if (args.length != 2){
-				sender.sendMessage("Wrong number of arguments.");
-				return false;
-			}
-			else{
-				landManager.removeMember(sender, args[0], args[1]);
-			}
-			return true;
-		}
-		
-		if(cmd.getName().equalsIgnoreCase("addOwner")){
-			
-			if (args.length != 2){
-				sender.sendMessage("Wrong number of arguments.");
-				return false;
-			}
-			else{
-				landManager.addOwner(sender, args[0], args[1]);
-			}
-			return true;
-		}
-		if(cmd.getName().equalsIgnoreCase("removeOwner")){
-			
-			if (args.length != 2){
-				sender.sendMessage("Wrong number of arguments.");
-				return false;
-			}
-			else{
-				landManager.removeOwner(sender, args[0], args[1]);
-			}
-			return true;
-		}
 		
 		/**
-		 * player wants to change the flags on their land
+		 * player want to know the price of the selected land
 		 */
-		if(cmd.getName().equalsIgnoreCase("flag")){
-			
-			if (args.length != 3){
+		if(cmd.getName().equalsIgnoreCase(LandCommand.PRICELAND.getCommand())){
+			if (args.length != 0){
 				sender.sendMessage("Wrong number of arguments.");
 				return false;
 			}
 			else{
-				flagManager.setFlag(sender, args);
+				landManager.getPrice(sender);
 			}
 			return true;
 		}
@@ -151,7 +152,7 @@ public class LandPurchasing extends JavaPlugin{
 		/**
 		 * player wants to buy a plot of land
 		 */
-		if(cmd.getName().equalsIgnoreCase("buyland")){
+		if(cmd.getName().equalsIgnoreCase(LandCommand.BUYLAND.getCommand())){
 			if (args.length != 1){
 				sender.sendMessage("Wrong number of arguments.");
 				return false;
@@ -165,7 +166,7 @@ public class LandPurchasing extends JavaPlugin{
 		/**
 		 * player wants to sell a plot of land
 		 */
-		if(cmd.getName().equalsIgnoreCase("sellland")){
+		if(cmd.getName().equalsIgnoreCase(LandCommand.SELLLAND.getCommand())){
 			if (args.length != 1){
 				sender.sendMessage("Wrong number of arguments.");
 				return false;
@@ -179,7 +180,7 @@ public class LandPurchasing extends JavaPlugin{
 		/**
 		 * player wants to see the land they own
 		 */
-		if(cmd.getName().equalsIgnoreCase("listland")){
+		if(cmd.getName().equalsIgnoreCase(LandCommand.LISTLAND.getCommand())){
 			if (args.length != 0){
 				sender.sendMessage("Wrong number of arguments.");
 				return false;
@@ -190,14 +191,77 @@ public class LandPurchasing extends JavaPlugin{
 			return true;
 		}
 		
-		//gets the price of your selection
-		if(cmd.getName().equalsIgnoreCase("price")){
-			if (args.length != 0){
+		/**
+		 * player wants to change the flags on their land
+		 */
+		if(cmd.getName().equalsIgnoreCase(LandCommand.FLAGLAND.getCommand())){
+			
+			if (args.length < 3){
 				sender.sendMessage("Wrong number of arguments.");
 				return false;
 			}
 			else{
-				landManager.getPrice(sender);
+				flagManager.setFlag(sender, args);
+			}
+			return true;
+		}
+		
+		/**
+		 * player wants to add a member to a plot of land
+		 */
+		if(cmd.getName().equalsIgnoreCase(LandCommand.ADDMEMBERLAND.getCommand())){
+			
+			if (args.length != 2){
+				sender.sendMessage("Wrong number of arguments.");
+				return false;
+			}
+			else{
+				landManager.addMember(sender, args[0], args[1]);
+			}
+			return true;
+		}
+		
+		/**
+		 * player wants to remove a member from a plot of land
+		 */
+		if(cmd.getName().equalsIgnoreCase(LandCommand.REMOVEMEMBERLAND.getCommand())){
+			
+			if (args.length != 2){
+				sender.sendMessage("Wrong number of arguments.");
+				return false;
+			}
+			else{
+				landManager.removeMember(sender, args[0], args[1]);
+			}
+			return true;
+		}
+		
+		/**
+		 * player wants to add an owner to a plot of land
+		 */
+		if(cmd.getName().equalsIgnoreCase(LandCommand.ADDOWNERLAND.getCommand())){
+			
+			if (args.length != 2){
+				sender.sendMessage("Wrong number of arguments.");
+				return false;
+			}
+			else{
+				landManager.addOwner(sender, args[0], args[1]);
+			}
+			return true;
+		}
+		
+		/**
+		 * player wants to remove an owner from a plot of land
+		 */
+		if(cmd.getName().equalsIgnoreCase(LandCommand.REMOVEOWNERLAND.getCommand())){
+			
+			if (args.length != 2){
+				sender.sendMessage("Wrong number of arguments.");
+				return false;
+			}
+			else{
+				landManager.removeOwner(sender, args[0], args[1]);
 			}
 			return true;
 		}

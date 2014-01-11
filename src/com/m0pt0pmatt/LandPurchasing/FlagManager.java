@@ -3,18 +3,18 @@
  */
 package com.m0pt0pmatt.LandPurchasing;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.EntityType;
 
+import com.m0pt0pmatt.LandPurchasing.flags.LandFlag;
 import com.sk89q.worldguard.protection.flags.BooleanFlag;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
-import com.sk89q.worldguard.protection.flags.EntityTypeFlag;
 import com.sk89q.worldguard.protection.flags.Flag;
 import com.sk89q.worldguard.protection.flags.StateFlag;
+import com.sk89q.worldguard.protection.flags.StateFlag.State;
 import com.sk89q.worldguard.protection.flags.StringFlag;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
@@ -27,35 +27,41 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
  */
 public class FlagManager {
 	
-	private List<StateFlag> stateFlags = new ArrayList<StateFlag>();	
-	private List<BooleanFlag> booleanFlags = new ArrayList<BooleanFlag>();
-	private List<StringFlag> stringFlags = new ArrayList<StringFlag>();	
+	private Map<String, LandFlag> flags = new HashMap<String, LandFlag>();	
 	private final String PVP_WARNING = "WARNING: You are entering a PVP-enabled region\n";
 	private final String PVP_LEAVE = "WARNING: You are leaving a PVP-enabled region\n";
 	
+	/**
+	 * initializes flags
+	 */
 	public FlagManager(){
+		
 		//default stateFlags
-		stateFlags.add(DefaultFlag.MOB_DAMAGE);
-		stateFlags.add(DefaultFlag.MOB_SPAWNING);
-		stateFlags.add(DefaultFlag.CREEPER_EXPLOSION);
-		stateFlags.add(DefaultFlag.ENDER_BUILD);
-		stateFlags.add(DefaultFlag.TNT);
-		stateFlags.add(DefaultFlag.FIRE_SPREAD);
-		stateFlags.add(DefaultFlag.GHAST_FIREBALL);
-		stateFlags.add(DefaultFlag.CHEST_ACCESS);
+		flags.put(DefaultFlag.MOB_DAMAGE.getName(), new LandFlag(DefaultFlag.MOB_DAMAGE, false, 0));
+		flags.put(DefaultFlag.MOB_SPAWNING.getName(), new LandFlag(DefaultFlag.MOB_SPAWNING, false, 0));
+		flags.put(DefaultFlag.CREEPER_EXPLOSION.getName(), new LandFlag(DefaultFlag.CREEPER_EXPLOSION, false, 0));
+		flags.put(DefaultFlag.ENDER_BUILD.getName(), new LandFlag(DefaultFlag.ENDER_BUILD, false, 0));
+		flags.put(DefaultFlag.TNT.getName(), new LandFlag(DefaultFlag.TNT, false, 0));
+		flags.put(DefaultFlag.FIRE_SPREAD.getName(), new LandFlag(DefaultFlag.FIRE_SPREAD, false, 0));
+		flags.put(DefaultFlag.GHAST_FIREBALL.getName(), new LandFlag(DefaultFlag.GHAST_FIREBALL, false, 0));
+		flags.put(DefaultFlag.CHEST_ACCESS.getName(), new LandFlag(DefaultFlag.CHEST_ACCESS, false, 0));
+		
 		//other stateFlags
-		stateFlags.add(DefaultFlag.PVP);
-		stateFlags.add(DefaultFlag.ENDERPEARL);
-		stateFlags.add(DefaultFlag.PISTONS);
-		stateFlags.add(DefaultFlag.USE);
+		flags.put(DefaultFlag.PVP.getName(), new LandFlag(DefaultFlag.PVP, true, 0.1));
+		flags.put(DefaultFlag.ENDERPEARL.getName(), new LandFlag(DefaultFlag.ENDERPEARL, false, 0));
+		flags.put(DefaultFlag.PISTONS.getName(), new LandFlag(DefaultFlag.PISTONS, false, 0));
+		flags.put(DefaultFlag.USE.getName(), new LandFlag(DefaultFlag.USE, false, 0));
 
 		//possibly misunderstood flags, message won't be sent to owner alone
-		booleanFlags.add(DefaultFlag.NOTIFY_ENTER);
-		booleanFlags.add(DefaultFlag.NOTIFY_LEAVE);
+		flags.put(DefaultFlag.NOTIFY_ENTER.getName(), new LandFlag(DefaultFlag.NOTIFY_ENTER, false, 0));
+		flags.put(DefaultFlag.NOTIFY_LEAVE.getName(), new LandFlag(DefaultFlag.NOTIFY_LEAVE, false, 0));
 		
 		//string flags
-		stringFlags.add(DefaultFlag.GREET_MESSAGE);
-		stringFlags.add(DefaultFlag.FAREWELL_MESSAGE);
+		flags.put(DefaultFlag.GREET_MESSAGE.getName(), new LandFlag(DefaultFlag.GREET_MESSAGE, false, 1000));
+		flags.put(DefaultFlag.FAREWELL_MESSAGE.getName(), new LandFlag(DefaultFlag.FAREWELL_MESSAGE, false, 1000));
+		
+		//custom flags
+		flags.put("outside-pistons", new LandFlag(new StateFlag("outside-pistons", true), false, 0));
 	}
 	
 	public void setDefaultFlags(ProtectedCuboidRegion region){
@@ -72,225 +78,162 @@ public class FlagManager {
 	/**
 	 * 
 	 * @param sender
-	 * @param args arg[0] = flag name, arg[1] = value, arg[2] = region
+	 * @param args arg[0] = plot name, arg[1] = flag name, arg[2] = value
 	 * @return
 	 */
 	public boolean setFlag(CommandSender sender, String[] args){
-
-		int flagId = 0;	//1 for StateFlag, 2 for BooleanFlag, 3 for StringFlag, 0 for error
-		int flagIndex = 0;
-		StateFlag stateFlag = null;
-		BooleanFlag booleanFlag = null;
-		StringFlag stringFlag = null;
 		
-		//check if flag name is valid
-		for(int i=0; i < stateFlags.size(); i++){
-			if(stateFlags.get(i).getName().equals(args[0])){
-				stateFlag = stateFlags.get(i);
-				flagId = 1;
-				flagIndex = i;
-				break;
-			}
-		}
-				
-		if(flagId == 0){
-			//check if flag name is valid as BooleanFlag
-			for(int i=0; i < booleanFlags.size(); i++){
-				if(booleanFlags.get(i).getName().equals(args[0])){
-					booleanFlag = booleanFlags.get(i);
-					flagId = 2;
-					flagIndex = i;
-					break;
-				}
-			}
-		}
+		String plotName = args[0];
+		String flagName = args[1];
 		
-		if(flagId == 0){
-			//check if flag name is valid as StringFlag
-			for(int i=0; i < stringFlags.size(); i++){
-				if(stringFlags.get(i).getName().equals(args[0])){
-					stringFlag = stringFlags.get(i);
-					flagId = 3;
-					flagIndex = i;
-					break;
-				}
-			}
+		String value = "";
+		for (int i = 2; i < args.length; i++){
+			value = value + " " + args[i];
 		}
+		value = value.substring(1, value.length() - 1);
 		
+		//get the region manager for the homeworld
 		RegionManager rm = LandPurchasing.wgplugin.getRegionManager(Bukkit.getWorld("HomeWorld"));
-		ProtectedRegion region = rm.getRegion(sender.getName() + "__" + args[2]);
+		if (rm == null){
+			sender.sendMessage("No region manager for the homeworld");
+			return false;
+		}
+		
+		ProtectedRegion region = rm.getRegion(sender.getName() + "__" + plotName);
 		if (region == null){
 			sender.sendMessage("No such region was found.");
 			return false;
 		}
 		
-		switch(flagId){
-		case 1:	//stateflags
-			if(args[1].equals("deny")){
-				switch(flagIndex){
-				case 0:
-					assignFlag(region,DefaultFlag.MOB_DAMAGE,StateFlag.State.DENY);
-				case 1:
-					assignFlag(region,DefaultFlag.MOB_SPAWNING,StateFlag.State.DENY);		
-				case 2:
-					assignFlag(region,DefaultFlag.CREEPER_EXPLOSION,StateFlag.State.DENY);
-				case 3:
-					assignFlag(region,DefaultFlag.ENDER_BUILD,StateFlag.State.DENY);
-				case 4:
-					assignFlag(region,DefaultFlag.TNT,StateFlag.State.DENY);
-				case 5:
-					assignFlag(region,DefaultFlag.FIRE_SPREAD,StateFlag.State.DENY);
-				case 6:
-					assignFlag(region,DefaultFlag.GHAST_FIREBALL,StateFlag.State.DENY);
-				case 7:
-					assignFlag(region,DefaultFlag.CHEST_ACCESS,StateFlag.State.DENY);
-				case 8:
-					assignFlag(region,DefaultFlag.PVP,StateFlag.State.DENY);
-					
-					//required warning upon entry to pvp region
-					String s = region.getFlag(DefaultFlag.GREET_MESSAGE);
-					if(s != null){
-						if(s.equals(PVP_WARNING)){
-							assignFlag(region,DefaultFlag.GREET_MESSAGE,"");
-						}
-						else if(s.startsWith(PVP_WARNING)){
-							s.replaceFirst(PVP_WARNING, "");
-							assignFlag(region,DefaultFlag.GREET_MESSAGE,s);
-						}
-					}
-					s = region.getFlag(DefaultFlag.FAREWELL_MESSAGE);
-					if(s != null){
-						if(s.equals(PVP_LEAVE)){
-							assignFlag(region,DefaultFlag.FAREWELL_MESSAGE,"");
-						}
-						else if(s.startsWith(PVP_LEAVE)){
-							s.replaceFirst(PVP_LEAVE, "");
-							assignFlag(region,DefaultFlag.FAREWELL_MESSAGE,s);
-						}
-					}
-					//10 % of land cost is pvp flag cost
-					double height = region.getMaximumPoint().getY() - region.getMinimumPoint().getY() + 1;
-					double length = region.getMaximumPoint().getX() - region.getMinimumPoint().getX() + 1;
-					double width = region.getMaximumPoint().getZ() - region.getMinimumPoint().getZ() + 1;
-					double cost = LandManager.getCost(height, length, width);
-					LandPurchasing.economy.withdrawPlayer(sender.getName(), Math.ceil(0.1 * cost));
-				case 9:
-					assignFlag(region,DefaultFlag.ENDERPEARL,StateFlag.State.DENY);
-				case 10:
-					assignFlag(region,DefaultFlag.PISTONS,StateFlag.State.DENY);
-				case 11:
-					assignFlag(region,DefaultFlag.USE,StateFlag.State.DENY);
-				}
+		LandFlag landFlag = flags.get(flagName);
+		if (landFlag == null){
+			sender.sendMessage("Unknown flag name");
+			return false;
+		}
+		
+		Flag<?> flag = landFlag.getFlag(); 
+		if (flag == null){
+			sender.sendMessage("Unknown flag name");
+			return false;
+		}
+		
+		//determine cost of setting the flag
+		double cost = 0;
+		if (landFlag.costScales()){
+			double height = region.getMaximumPoint().getY() - region.getMinimumPoint().getY() + 1;
+			double length = region.getMaximumPoint().getX() - region.getMinimumPoint().getX() + 1;
+			double width = region.getMaximumPoint().getZ() - region.getMinimumPoint().getZ() + 1;
+			cost = landFlag.getCost() * LandManager.getCost(height, length, width);
+		}
+		else{
+			cost = landFlag.getCost();
+		}
+		
+		//check if the player can afford changing this flag
+		if (!LandPurchasing.economy.has(sender.getName(), cost)){
+			sender.sendMessage("You do not have the required funds. Changing this flag costs $" + cost);
+		}
+		
+		//withdraw the funds from the player to the server
+		LandPurchasing.economy.withdrawPlayer(sender.getName(), cost);
+		LandPurchasing.economy.depositPlayer("__Server", cost);
+		
+		//special cases come first, before the flag is set
+		if (flag.getName().equalsIgnoreCase(DefaultFlag.PVP.getName())){
+			//required warning upon entry/exit of pvp region
+			String s = region.getFlag(DefaultFlag.GREET_MESSAGE);
+			if(s != null){
+				assignFlag(region,DefaultFlag.GREET_MESSAGE,PVP_WARNING + s);
 			}
-			else if(args[1].equals("allow")){
-				switch(flagIndex){
-				case 0:
-					assignFlag(region,DefaultFlag.MOB_DAMAGE,StateFlag.State.ALLOW);
-				case 1:
-					assignFlag(region,DefaultFlag.MOB_SPAWNING,StateFlag.State.ALLOW);		
-				case 2:
-					assignFlag(region,DefaultFlag.CREEPER_EXPLOSION,StateFlag.State.ALLOW);
-				case 3:
-					assignFlag(region,DefaultFlag.ENDER_BUILD,StateFlag.State.ALLOW);
-				case 4:
-					assignFlag(region,DefaultFlag.TNT,StateFlag.State.ALLOW);
-				case 5:
-					assignFlag(region,DefaultFlag.FIRE_SPREAD,StateFlag.State.ALLOW);
-				case 6:
-					assignFlag(region,DefaultFlag.GHAST_FIREBALL,StateFlag.State.ALLOW);
-				case 7:
-					assignFlag(region,DefaultFlag.CHEST_ACCESS,StateFlag.State.ALLOW);
-				case 8:
-					assignFlag(region,DefaultFlag.PVP,StateFlag.State.ALLOW);
-					
-					//required warning upon entry/exit of pvp region
-					String s = region.getFlag(DefaultFlag.GREET_MESSAGE);
-					if(s != null){
-						assignFlag(region,DefaultFlag.GREET_MESSAGE,PVP_WARNING + s);
-					}
-					else {
-						assignFlag(region,DefaultFlag.GREET_MESSAGE,PVP_WARNING);
-					}
-					
-					s = region.getFlag(DefaultFlag.FAREWELL_MESSAGE);
-					if(s != null){
-						assignFlag(region,DefaultFlag.FAREWELL_MESSAGE,PVP_LEAVE + s);
-					}
-					else {
-						assignFlag(region,DefaultFlag.FAREWELL_MESSAGE,PVP_LEAVE);
-					}
-					
-					//10 % of land cost is pvp flag cost
-					double height = region.getMaximumPoint().getY() - region.getMinimumPoint().getY() + 1;
-					double length = region.getMaximumPoint().getX() - region.getMinimumPoint().getX() + 1;
-					double width = region.getMaximumPoint().getZ() - region.getMinimumPoint().getZ() + 1;
-					double cost = LandManager.getCost(height, length, width);
-					LandPurchasing.economy.withdrawPlayer(sender.getName(), Math.ceil(0.1 * cost));
-					
-				case 9:
-					assignFlag(region,DefaultFlag.ENDERPEARL,StateFlag.State.ALLOW);
-				case 10:
-					assignFlag(region,DefaultFlag.PISTONS,StateFlag.State.ALLOW);
-				case 11:
-					assignFlag(region,DefaultFlag.USE,StateFlag.State.ALLOW);
-				}
+			else {
+				assignFlag(region,DefaultFlag.GREET_MESSAGE,PVP_WARNING);
+			}
+			
+			s = region.getFlag(DefaultFlag.FAREWELL_MESSAGE);
+			if(s != null){
+				assignFlag(region,DefaultFlag.FAREWELL_MESSAGE,PVP_LEAVE + s);
+			}
+			else {
+				assignFlag(region,DefaultFlag.FAREWELL_MESSAGE,PVP_LEAVE);
+			}
+						
+		}
+		
+		//set the flag
+		
+		//check if the flag is a state flag
+		if (flag instanceof StateFlag){
+			
+			if(value.equalsIgnoreCase("deny")){
+				assignFlag(region,(StateFlag)flag,StateFlag.State.DENY);
+			}
+			else if (value.equalsIgnoreCase("allow")){
+				assignFlag(region,(StateFlag)flag,StateFlag.State.ALLOW);
 			}
 			else{
-				sender.sendMessage("Invalid argument " + args[1]);
+				sender.sendMessage(value + "is not a valid state for the flag " + flag.getName());
+				sender.sendMessage("Expected allow or deny");
+				return false;
 			}
-		case 2:	//boolean flags
-			if(args[1].equals("deny")){
-				switch(flagIndex){
-				case 0:
-					assignFlag(region,DefaultFlag.NOTIFY_ENTER,false);
-				case 1:
-					assignFlag(region,DefaultFlag.NOTIFY_LEAVE,false);
-				}
+		}
+		
+		//check i the flag is a boolean flag
+		else if (flag instanceof BooleanFlag){
+						
+			if(value.equalsIgnoreCase("true")){
+				assignFlag(region,(BooleanFlag)flag,true);
 			}
-			else if(args[1].equals("allow")){
-				switch(flagIndex){
-				case 0:
-					assignFlag(region,DefaultFlag.NOTIFY_ENTER,true);
-				case 1:
-					assignFlag(region,DefaultFlag.NOTIFY_LEAVE,true);
-				}
+			else if (value.equalsIgnoreCase("false")){
+				assignFlag(region,(BooleanFlag)flag,false);
 			}
 			else{
-				sender.sendMessage("Invalid argument " + args[1]);
+				sender.sendMessage(value + "is not a valid value for the flag " + flag.getName());
+				sender.sendMessage("Expected true or false");
+				return false;
 			}
-		case 3:	//string flags
-			if(args[1].startsWith("WARNING:")){
+		}
+		
+		//check if the flag is a string flag
+		else if (flag instanceof StringFlag){
+			
+			//check if flag is a WARNING flag
+			if(flagName.startsWith("WARNING:")){
 				sender.sendMessage("Messages starting with 'Warning:' are reserved for server use");
 				return false;
 			}
 			
-			LandPurchasing.economy.withdrawPlayer(sender.getName(), 1000);
-			
-			switch(flagIndex){
-			case 0:
-				assignFlag(region,DefaultFlag.GREET_MESSAGE,args[1]);
-			case 1:
-				assignFlag(region,DefaultFlag.FAREWELL_MESSAGE,args[1]);
-			}
-		case 0:
-			sender.sendMessage("Invalid flag name");
+			assignFlag(region,(StringFlag)flag,value);
+		}
+		
+		//unknown flag
+		else{
+			sender.sendMessage("Unknown flag type");
 			return false;
 		}
+		
+		sender.sendMessage("You have successfully set flag " + flagName + " to " + value + " for the plot " + plotName + " for a cost of $" + cost);
+		
 		return true;	
 	}
 	
 	/**
-	 * Recieves instructions and executes the cooresponding command
+	 * Receives instructions and executes the corresponding command
 	 */
-	private void assignFlag(ProtectedRegion region, StateFlag flag, StateFlag.State value){
+	private void assignFlag(ProtectedRegion region, StateFlag flag, State value){
 		region.setFlag(flag, value);
 	}
 	
+	/**
+	 * Receives instructions and executes the corresponding command
+	 */
 	private void assignFlag(ProtectedRegion region, BooleanFlag flag, boolean value){
 		region.setFlag(flag, value);
 	}
 	
-	private void assignFlag(ProtectedRegion region, StringFlag flag, String value){
+	/**
+	 * Receives instructions and executes the corresponding command
+	 */
+	private  void assignFlag(ProtectedRegion region, StringFlag flag, String value){
 		region.setFlag(flag, value);
 	}
 

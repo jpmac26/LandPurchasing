@@ -1,17 +1,32 @@
 name: LandPurchasing
 main: com.m0pt0pmatt.LandPurchasing.LandPurchasing
 version: 0.1
-softdepend: [WorldEdit, WorldGuard, Vault, PluginUtils]
+softdepend: [WorldEdit, WorldGuard, Vault]
 commands:
     buyland:
-        description: buy your current selection.
-        usage: /buyland (plot name)
+        description: Buy your current selection
+        usage: /buyland [plot_name]
     sellland:
-        description: sell a plot of land.
-        usage: /sellland (plot name)
+        description: Sell a plot of land
+        usage: /sellland [plot_name]
     listland:
-        description: list all of the plots you own.
+        description: List all of the plots you own
         usage: /listland
-    help:
-        description: get help
-        usage: /help
+    flagland:
+        description: Change a flag on a plot of land
+        usage: /flagland [plot] [flag] [value]
+    addmember:
+        description: Add a member to a plot of land
+        usage: /addmember [plot_name] [player_name]
+    removemember:
+        description: Remove a member from a plot of land
+        usage: /removemember [plot_name] [player_name]
+    addowner:
+        description: Add an owner to a plot of land
+        usage: /addowner [plot_name] [player_name]
+    removeowner:
+        description: Remove an owner from a plot of land
+        usage: /removeowner [plot_name] [player_name]
+    landmenu:
+        description: Open the land menu
+        usage: /landmenu
