@@ -90,7 +90,7 @@ public class FlagManager {
 		for (int i = 2; i < args.length; i++){
 			value = value + " " + args[i];
 		}
-		value = value.substring(1, value.length() - 1);
+		value = value.substring(1, value.length());
 		
 		//get the region manager for the homeworld
 		RegionManager rm = LandPurchasing.wgplugin.getRegionManager(Bukkit.getWorld("HomeWorld"));
