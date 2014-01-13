@@ -30,3 +30,6 @@ commands:
     landmenu:
         description: Open the land menu
         usage: /landmenu
+    land:
+        description: A wrapper command for all land-related commands
+        usage: /land [command] [arguments]

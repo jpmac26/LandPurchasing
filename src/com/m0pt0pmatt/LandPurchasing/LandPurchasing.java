@@ -9,6 +9,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.m0pt0pmatt.menuservice.api.MenuService;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 
@@ -52,9 +53,18 @@ public class LandPurchasing extends JavaPlugin{
 	public static WorldEditPlugin weplugin = null;
 	
 	/**
-	 * Initialize components of LandPurchasing
+	 * The MenuService for creating menus
 	 */
-	public void onLoad(){
+	public static MenuService menuService = null;
+	
+	/**
+	 * Hook into other plugins
+	 */
+	public void onEnable(){
+		weplugin = getWorldEdit();
+		wgplugin = getWorldGuard();
+		setupEconomy();
+		menuService = Bukkit.getServicesManager().getRegistration(MenuService.class).getProvider();
 		
 		//set up the landmanager
 		landManager = new LandManager();
@@ -64,17 +74,8 @@ public class LandPurchasing extends JavaPlugin{
 		
 		//set up land listener
 		landListener = new LandListener();
-		
-	}
-	
-	/**
-	 * Hook into other plugins
-	 */
-	public void onEnable(){
-		weplugin = getWorldEdit();
-		wgplugin = getWorldGuard();
-		setupEconomy();
 		Bukkit.getPluginManager().registerEvents(landListener, this);
+		
 	}
 	
 	/**
@@ -237,35 +238,19 @@ public class LandPurchasing extends JavaPlugin{
 		}
 		
 		/**
-		 * player wants to add an owner to a plot of land
+		 * player wants to open the land menu
 		 */
-		if(cmd.getName().equalsIgnoreCase(LandCommand.ADDOWNERLAND.getCommand())){
-			
-			if (args.length != 2){
+		if(cmd.getName().equalsIgnoreCase(LandCommand.LANDMENU.getCommand())){
+			if (args.length != 0){
 				sender.sendMessage("Wrong number of arguments.");
 				return false;
 			}
 			else{
-				landManager.addOwner(sender, args[0], args[1]);
+				landManager.landMenu(sender);
 			}
 			return true;
 		}
-		
-		/**
-		 * player wants to remove an owner from a plot of land
-		 */
-		if(cmd.getName().equalsIgnoreCase(LandCommand.REMOVEOWNERLAND.getCommand())){
-			
-			if (args.length != 2){
-				sender.sendMessage("Wrong number of arguments.");
-				return false;
-			}
-			else{
-				landManager.removeOwner(sender, args[0], args[1]);
-			}
-			return true;
-		}
-		
+				
 		return false;
 	}
 	
