@@ -9,6 +9,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.m0pt0pmatt.LandPurchasing.menus.MenuStore;
 import com.m0pt0pmatt.menuservice.api.MenuService;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
@@ -57,10 +58,15 @@ public class LandPurchasing extends JavaPlugin{
 	 */
 	public static MenuService menuService = null;
 	
+	public static MenuStore menuStore = null;
+	
+	public static Plugin plugin;
+	
 	/**
 	 * Hook into other plugins
 	 */
 	public void onEnable(){
+		plugin = this;
 		weplugin = getWorldEdit();
 		wgplugin = getWorldGuard();
 		setupEconomy();
@@ -76,6 +82,7 @@ public class LandPurchasing extends JavaPlugin{
 		landListener = new LandListener();
 		Bukkit.getPluginManager().registerEvents(landListener, this);
 		
+		menuStore = new MenuStore();
 	}
 	
 	/**
@@ -246,7 +253,7 @@ public class LandPurchasing extends JavaPlugin{
 				return false;
 			}
 			else{
-				landManager.landMenu(sender);
+				menuStore.openMainMenu(sender);
 			}
 			return true;
 		}

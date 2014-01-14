@@ -1,7 +1,7 @@
 name: LandPurchasing
 main: com.m0pt0pmatt.LandPurchasing.LandPurchasing
 version: 0.1
-softdepend: [WorldEdit, WorldGuard, Vault]
+softdepend: [WorldEdit, WorldGuard, Vault, MenuService]
 commands:
     buyland:
         description: Buy your current selection

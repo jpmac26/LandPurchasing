@@ -6,8 +6,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import com.m0pt0pmatt.menuservice.api.Menu;
-import com.m0pt0pmatt.menuservice.api.MenuPart;
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.bukkit.selections.Selection;
@@ -367,12 +365,4 @@ public class LandManager {
 		return (5 + height)*(length * width);
 	}
 
-	
-	/**
-	 * Opens the LandMenu: A graphical interface for most land-related commands
-	 * @param sender
-	 */
-	public void landMenu(CommandSender sender) {
-		
-	}
 }
