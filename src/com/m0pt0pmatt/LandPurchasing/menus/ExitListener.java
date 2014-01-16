@@ -2,8 +2,8 @@ package com.m0pt0pmatt.LandPurchasing.menus;
 
 import org.bukkit.Bukkit;
 
-import com.m0pt0pmatt.menuservice.api.ActionEvent;
-import com.m0pt0pmatt.menuservice.api.ActionListener;
+import com.m0pt0pmatt.menuservice.api.actions.ActionEvent;
+import com.m0pt0pmatt.menuservice.api.actions.ActionListener;
 
 public class ExitListener implements ActionListener{
 

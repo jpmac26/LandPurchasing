@@ -10,6 +10,7 @@ import com.m0pt0pmatt.menuservice.api.AbstractComponent;
 import com.m0pt0pmatt.menuservice.api.Component;
 import com.m0pt0pmatt.menuservice.api.ComponentType;
 import com.m0pt0pmatt.menuservice.api.MenuPart;
+import com.m0pt0pmatt.menuservice.api.actions.DefaultAction;
 import com.m0pt0pmatt.menuservice.api.attributes.Attribute;
 
 /**
@@ -32,9 +33,7 @@ public class MenuPartStore {
 		exitButton.setTag("exitButton");
 		exitButton.setType(ComponentType.BUTTON);
 		exitButton.addAttribute(Attribute.ITEM, new ItemStack(Material.APPLE));
-		List<Integer> intActions = new LinkedList<Integer>();
-		intActions.add(1);
-		exitButton.addAction("onClick", intActions);
+		exitButton.addAction(DefaultAction.LEFT_CLICK, 1);
 		
 		components.add(exitButton);
 		
