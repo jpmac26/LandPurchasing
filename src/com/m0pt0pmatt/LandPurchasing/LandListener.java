@@ -2,7 +2,6 @@ package com.m0pt0pmatt.LandPurchasing;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import org.bukkit.Location;
@@ -15,7 +14,6 @@ import org.bukkit.event.block.BlockPistonRetractEvent;
 
 import com.m0pt0pmatt.LandPurchasing.flags.CustomFlag;
 import com.sk89q.worldedit.Vector;
-import com.sk89q.worldguard.protection.flags.Flag;
 import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.sk89q.worldguard.protection.flags.StateFlag.State;
 import com.sk89q.worldguard.protection.managers.RegionManager;

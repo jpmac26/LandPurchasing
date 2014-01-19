@@ -1,5 +1,7 @@
 package com.m0pt0pmatt.LandPurchasing;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
@@ -114,18 +116,14 @@ public class LandManager {
 		sender.sendMessage(memberName + " is no longer a member of the plot " + regionName);
 	}
 
-	/**
-	 * Lists all regions a sender owns
-	 * @param sender the player executing the command
-	 */
-	public void listRegions(CommandSender sender){
-		sender.sendMessage("Here are all the regions you own:");
+	public List<String> getRegions(CommandSender sender){
+		List<String> regionList = new LinkedList<String>();
 		
 		//get the region manager for the homeworld
 		RegionManager rm = LandPurchasing.wgplugin.getRegionManager(Bukkit.getWorld("HomeWorld"));
 		if (rm == null){
 			sender.sendMessage("No region manager for the homeworld");
-			return;
+			return regionList;
 		}
 		
 		//get all regions from the region manager
@@ -142,10 +140,24 @@ public class LandManager {
 				
 				//make sure plot is a valid land plot
 				if (plotName.startsWith(sender.getName())){
-					sender.sendMessage(plotName.substring(sender.getName().length() + 2, plotName.length()));
+					regionList.add(plotName.substring(sender.getName().length() + 2, plotName.length()));
 				}
 			}
 		}
+		return regionList;
+	}
+	
+	/**
+	 * Lists all regions a sender owns
+	 * @param sender the player executing the command
+	 */
+	public void listRegions(CommandSender sender){
+		sender.sendMessage("Here are all the regions you own:");
+		List<String> regions = this.getRegions(sender);
+		for (String regionName: regions){
+			sender.sendMessage(regionName);
+		}
+		
 	}
 	
 	/**
