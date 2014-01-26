@@ -62,6 +62,10 @@ public class FlagManager {
 		flags.put(DefaultFlag.GREET_MESSAGE.getName(), new LandFlag(DefaultFlag.GREET_MESSAGE, false, 1000));
 		flags.put(DefaultFlag.FAREWELL_MESSAGE.getName(), new LandFlag(DefaultFlag.FAREWELL_MESSAGE, false, 1000));
 		
+		//TODO: list flags
+		//allowed-cmds and blocked-cmds
+		//to be used for atm's and a bank
+		
 		//custom flags
 		flags.put(CustomFlag.OUTSIDEPISTONS.getFlag().getFlag().getName(),CustomFlag.OUTSIDEPISTONS.getFlag());
 	}
