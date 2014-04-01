@@ -132,6 +132,7 @@ public class LandPurchasing extends JavaPlugin{
 	/**
 	 * Handle land-based commands
 	 * Current list of commands are:
+	 *	/priceland
 	 * 	/buyland [plot_name]
 	 * 	/sellland [plot_name]
 	 * 	/listland
