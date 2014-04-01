@@ -154,40 +154,50 @@ public class FlagManager {
 			if (value.equalsIgnoreCase("allow")){
 				//required warning upon entry/exit of pvp region
 				String s = region.getFlag(DefaultFlag.GREET_MESSAGE);
-				if (s.startsWith(PVP_WARNING)){
-					s = s.substring(PVP_WARNING.length());
-				}
-				if(s != null){
-					assignFlag(region,DefaultFlag.GREET_MESSAGE,PVP_WARNING + s);
-				}
-				else {
+				if(s == null){
 					assignFlag(region,DefaultFlag.GREET_MESSAGE,PVP_WARNING);
+				}
+				else{
+					if(!s.startsWith(PVP_WARNING)){
+						return true;
+					}
+					assignFlag(region,DefaultFlag.GREET_MESSAGE,PVP_WARNING + s);
 				}
 				
 				s = region.getFlag(DefaultFlag.FAREWELL_MESSAGE);
-				if (s.startsWith(PVP_LEAVE)){
-					s = s.substring(PVP_LEAVE.length());
-				}
-				if(s != null){
-					assignFlag(region,DefaultFlag.FAREWELL_MESSAGE,PVP_LEAVE + s);
-				}
-				else {
+				if(s == null){
 					assignFlag(region,DefaultFlag.FAREWELL_MESSAGE,PVP_LEAVE);
+				}
+				else{
+					if(!s.startsWith(PVP_LEAVE)){
+						return true;
+					}
+					assignFlag(region,DefaultFlag.FAREWELL_MESSAGE,PVP_LEAVE + s);
 				}
 			}
 			else if (value.equalsIgnoreCase("deny")){
+			
 				String s = region.getFlag(DefaultFlag.GREET_MESSAGE);
-				assignFlag(region,DefaultFlag.GREET_MESSAGE,s.substring(PVP_WARNING.length()));
+				if(s != null){
+					if(s.equals(PVP_WARNING)){
+						assignFlag(region,DefaultFlag.GREET_MESSAGE,"");
+					}
+					else{
+						assignFlag(region,DefaultFlag.GREET_MESSAGE,s.substring(PVP_WARNING.length()));
+					}
+				}
+				
 				s = region.getFlag(DefaultFlag.FAREWELL_MESSAGE);
-				assignFlag(region,DefaultFlag.FAREWELL_MESSAGE,s.substring(PVP_LEAVE.length()));
-			}
-						
+				if(s != null){
+					if(s.equals(PVP_WARNING)){
+						assignFlag(region,DefaultFlag.FAREWELL_MESSAGE,"");
+					}
+					else{
+						assignFlag(region,DefaultFlag.FAREWELL_MESSAGE,s.substring(PVP_LEAVE.length()));
+					}
+				}
+			}				
 		}
-		
-		//if greeting or farewell messages are being changed, keep the pvp warning if pvp is allowed
-		//TODO:
-		
-		//set the flag
 		
 		//check if the flag is a state flag
 		if (flag instanceof StateFlag){

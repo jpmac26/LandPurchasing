@@ -24,7 +24,7 @@ public class LandManager {
 	 * @param memberName
 	 * @param regionName
 	 */
-	public void addMember(CommandSender sender, String memberName, String regionName){
+	public void addMember(CommandSender sender, String regionName, String memberName){
 		
 		//make sure the command executor is a player
 		if(!(sender instanceof Player)){
@@ -72,7 +72,7 @@ public class LandManager {
 	 * @param memberName
 	 * @param regionName
 	 */
-	public void removeMember(CommandSender sender, String memberName, String regionName){
+	public void removeMember(CommandSender sender, String regionName, String memberName){
 	
 		//make sure the command executor is a player
 		if(!(sender instanceof Player)){
