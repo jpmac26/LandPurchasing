@@ -16,8 +16,8 @@ public enum LandCommand {
 	ADDMEMBERLAND("addmember"),
 	REMOVEMEMBERLAND("removemember"),
 	ADDOWNERLAND("addowner"),
-	REMOVEOWNERLAND("removeowner");
-	//TODO:BUYATM("buyatm");
+	REMOVEOWNERLAND("removeowner"),
+	BUYATM("buyatm");
 
 	private String command;
 

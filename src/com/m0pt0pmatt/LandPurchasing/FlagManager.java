@@ -68,6 +68,7 @@ public class FlagManager {
 		
 		//custom flags
 		flags.put(CustomFlag.OUTSIDEPISTONS.getFlag().getFlag().getName(),CustomFlag.OUTSIDEPISTONS.getFlag());
+		flags.put(CustomFlag.BANKFLAG.getFlag().getFlag().getName(),CustomFlag.BANKFLAG.getFlag());
 	}
 	
 	public void setDefaultFlags(ProtectedRegion region){
@@ -80,8 +81,9 @@ public class FlagManager {
 		region.setFlag(DefaultFlag.GHAST_FIREBALL, StateFlag.State.DENY);
 		region.setFlag(DefaultFlag.CHEST_ACCESS, StateFlag.State.ALLOW);
 		region.setFlag((StateFlag)CustomFlag.OUTSIDEPISTONS.getFlag().getFlag(), StateFlag.State.DENY);	
+		region.setFlag((StateFlag)CustomFlag.BANKFLAG.getFlag().getFlag(), StateFlag.State.DENY);	
 	}
-	
+
 	/**
 	 * 
 	 * @param sender

@@ -141,8 +141,26 @@ public class LandPurchasing extends JavaPlugin{
 	 *	/removemember [plot_name] [player_name]
 	 * 	/addowner [plot_name] [player_name]
 	 * 	/removemember [plot_name] [player_name]
+	 * 	/buyatm [atm_name]
 	 */
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args){
+		
+		/**
+		 * player wants to buy an atm
+		 */
+		if(cmd.getName().equalsIgnoreCase(LandCommand.BUYATM.getCommand())){
+			if (args.length != 1){
+				sender.sendMessage("Wrong number of arguments.");
+				return false;
+			}
+			else{
+				landManager.buyLand(sender, args[0]);
+				
+				String[] atmArgs = {args[0],"bankFlag","allow"};
+				flagManager.setFlag(sender, atmArgs);
+			}
+			return true;
+		}
 		
 		/**
 		 * player want to know the price of the selected land
