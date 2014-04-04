@@ -7,9 +7,15 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
+import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.m0pt0pmatt.LandPurchasing.managers.FlagManager;
+import com.m0pt0pmatt.LandPurchasing.managers.LandManager;
+import com.m0pt0pmatt.LandPurchasing.managers.LandService;
+import com.m0pt0pmatt.LandPurchasing.managers.LandServiceProvider;
 import com.m0pt0pmatt.LandPurchasing.menus.MenuStore;
+import com.m0pt0pmatt.menuservice.api.MenuService;
 //import com.m0pt0pmatt.menuservice.api.MenuService;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
@@ -56,11 +62,13 @@ public class LandPurchasing extends JavaPlugin{
 	/**
 	 * The MenuService for creating menus
 	 */
-	//public static MenuService menuService = null;
+	public static MenuService menuService = null;
 	
 	public static MenuStore menuStore = null;
 	
 	public static Plugin plugin;
+	
+	private static LandService landService;
 	
 	/**
 	 * Hook into other plugins
@@ -70,7 +78,7 @@ public class LandPurchasing extends JavaPlugin{
 		weplugin = getWorldEdit();
 		wgplugin = getWorldGuard();
 		setupEconomy();
-		//menuService = Bukkit.getServicesManager().getRegistration(MenuService.class).getProvider();
+		menuService = Bukkit.getServicesManager().getRegistration(MenuService.class).getProvider();
 		
 		//set up the landmanager
 		landManager = new LandManager();
@@ -83,6 +91,10 @@ public class LandPurchasing extends JavaPlugin{
 		Bukkit.getPluginManager().registerEvents(landListener, this);
 		
 		menuStore = new MenuStore();
+		
+		//setup land service
+		landService = new LandServiceProvider(flagManager, landManager);
+		Bukkit.getServicesManager().register(LandService.class, landService, this, ServicePriority.Normal);
 	}
 	
 	/**

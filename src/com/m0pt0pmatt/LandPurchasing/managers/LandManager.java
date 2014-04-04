@@ -1,4 +1,4 @@
-package com.m0pt0pmatt.LandPurchasing;
+package com.m0pt0pmatt.LandPurchasing.managers;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -8,6 +8,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import com.m0pt0pmatt.LandPurchasing.LandPurchasing;
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.bukkit.selections.Selection;

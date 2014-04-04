@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.m0pt0pmatt.LandPurchasing;
+package com.m0pt0pmatt.LandPurchasing.managers;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -9,6 +9,7 @@ import java.util.Map;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
+import com.m0pt0pmatt.LandPurchasing.LandPurchasing;
 import com.m0pt0pmatt.LandPurchasing.flags.CustomFlag;
 import com.m0pt0pmatt.LandPurchasing.flags.LandFlag;
 import com.sk89q.worldguard.protection.databases.ProtectionDatabaseException;
