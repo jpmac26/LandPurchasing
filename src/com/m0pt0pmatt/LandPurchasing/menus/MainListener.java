@@ -34,7 +34,10 @@ public class MainListener implements ActionListener{
 		
 		Player player = Bukkit.getPlayer(playerName);
 		
-		switch(ActionTag.getActionTag(actionTag)){
+		ActionTag tag = ActionTag.getActionTag(actionTag);
+		if (tag == null) return;
+		
+		switch(tag){
 		case EXIT:
 			exitMenu(playerName);
 			break;

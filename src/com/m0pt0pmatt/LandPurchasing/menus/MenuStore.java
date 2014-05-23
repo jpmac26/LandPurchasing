@@ -19,10 +19,10 @@ public class MenuStore {
 		
 	}
 	
-	private Menu createMainMenu(CommandSender player){
+	private Menu createMainMenu(CommandSender player, int startIndex){
 		Menu mainMenu = new Menu();
-		mainMenu.addPart(parts.exitButton);
-		mainMenu.addPart(parts.createLandList(player.getName(), 0, 27, 9));
+		mainMenu.addPart(parts.createLandList(player.getName(), startIndex));
+		mainMenu.setSize(5);
 		return mainMenu;
 	}
 	
@@ -31,7 +31,7 @@ public class MenuStore {
 	 * @param player
 	 */
 	public void openMainMenu(CommandSender player) {
-		inventoryRenderer.openMenu(createMainMenu(player), player.getName());
+		inventoryRenderer.openMenu(createMainMenu(player, 0), player.getName());
 	}
 	
 	public void openPlotMenu(CommandSender player, String plotName){

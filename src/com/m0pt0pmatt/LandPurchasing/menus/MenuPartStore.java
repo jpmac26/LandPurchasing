@@ -48,20 +48,65 @@ public class MenuPartStore {
 		
 	}
 	
-	public MenuPart createLandList(String playerName, int startIndex, int size, int rowSize){
+	public MenuPart createLandList(String playerName, int startIndex){
 		
 		List<Component> components = new LinkedList<Component>();
 		
+		Component leftButton = new AbstractComponent();
+		leftButton.setTag("leftButton");
+		leftButton.setType(ComponentType.BUTTON);
+		leftButton.addAction(DefaultAction.LEFT_CLICK, 2);
+		leftButton.addAttribute(Attribute.ITEM, new ItemStack(Material.BEDROCK));
+		leftButton.addAttribute("nextStart", java.lang.Math.max(0, startIndex - (9 * 4)));
+		leftButton.addAttribute(Attribute.X, 0);
+		leftButton.addAttribute(Attribute.Y, 4);
+		components.add(leftButton);
+		
 		List<String> regions = LandPurchasing.landManager.getRegions(Bukkit.getPlayer(playerName));
+		
+		int i = startIndex;
+		int end = startIndex + (4*9);
+		int x = 0;
+		int y = 0;
+		int nextStart = 0;
+		
 		for (String regionName: regions){
+			
+			if (i < startIndex){
+				i++;
+				continue;
+			}
+			if (x > 9){
+				x = 0;
+				y++;
+			}
+			if (y > 3){
+				nextStart = i;
+				break;
+			}
+			
 			Component component = new AbstractComponent();
 			component.setTag("landButton_" + regionName);
 			component.setType(ComponentType.BUTTON);
 			component.addAction(DefaultAction.LEFT_CLICK, 1);
 			component.addAttribute("landplot", regionName);
 			component.addAttribute(Attribute.ITEM, new ItemStack(Material.WOOL));
+			component.addAttribute(Attribute.X, x);
+			component.addAttribute(Attribute.Y, y);
 			components.add(component);
+			i++;
+			x++;
 		}
+		
+		Component rightButton = new AbstractComponent();
+		rightButton.setTag("rightButton");
+		rightButton.setType(ComponentType.BUTTON);
+		rightButton.addAction(DefaultAction.LEFT_CLICK, 3);
+		rightButton.addAttribute(Attribute.ITEM, new ItemStack(Material.BEDROCK));
+		rightButton.addAttribute("nextStart", nextStart);
+		rightButton.addAttribute(Attribute.X, 8);
+		rightButton.addAttribute(Attribute.Y, 4);
+		components.add(rightButton);
 		
 		MenuPart landList = new MenuPart("landlist_" + playerName, components);
 		landList.setListener(mainListener);
