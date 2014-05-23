@@ -15,6 +15,7 @@ import com.m0pt0pmatt.LandPurchasing.managers.LandManager;
 import com.m0pt0pmatt.LandPurchasing.managers.LandService;
 import com.m0pt0pmatt.LandPurchasing.managers.LandServiceProvider;
 import com.m0pt0pmatt.LandPurchasing.menus.MenuStore;
+import com.m0pt0pmatt.menuservice.api.MenuService;
 //stop it
 //import com.m0pt0pmatt.menuservice.api.MenuService;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
@@ -70,6 +71,8 @@ public class LandPurchasing extends JavaPlugin{
 	
 	private static LandService landService;
 	
+	public static MenuService menuService;
+	
 	/**
 	 * Hook into other plugins
 	 */
@@ -95,6 +98,8 @@ public class LandPurchasing extends JavaPlugin{
 		//setup land service
 		landService = new LandServiceProvider(flagManager, landManager);
 		Bukkit.getServicesManager().register(LandService.class, landService, this, ServicePriority.Normal);
+		
+		menuService = Bukkit.getServicesManager().getRegistration(MenuService.class).getProvider();
 	}
 	
 	/**
