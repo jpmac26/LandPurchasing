@@ -7,10 +7,16 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
+import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.m0pt0pmatt.LandPurchasing.managers.FlagManager;
+import com.m0pt0pmatt.LandPurchasing.managers.LandManager;
+import com.m0pt0pmatt.LandPurchasing.managers.LandService;
+import com.m0pt0pmatt.LandPurchasing.managers.LandServiceProvider;
 import com.m0pt0pmatt.LandPurchasing.menus.MenuStore;
-import com.m0pt0pmatt.menuservice.api.MenuService;
+//stop it
+//import com.m0pt0pmatt.menuservice.api.MenuService;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 
@@ -56,11 +62,13 @@ public class LandPurchasing extends JavaPlugin{
 	/**
 	 * The MenuService for creating menus
 	 */
-	public static MenuService menuService = null;
+	//public static MenuService menuService = null;
 	
 	public static MenuStore menuStore = null;
 	
 	public static Plugin plugin;
+	
+	private static LandService landService;
 	
 	/**
 	 * Hook into other plugins
@@ -70,7 +78,7 @@ public class LandPurchasing extends JavaPlugin{
 		weplugin = getWorldEdit();
 		wgplugin = getWorldGuard();
 		setupEconomy();
-		menuService = Bukkit.getServicesManager().getRegistration(MenuService.class).getProvider();
+		//menuService = Bukkit.getServicesManager().getRegistration(MenuService.class).getProvider();
 		
 		//set up the landmanager
 		landManager = new LandManager();
@@ -83,6 +91,10 @@ public class LandPurchasing extends JavaPlugin{
 		Bukkit.getPluginManager().registerEvents(landListener, this);
 		
 		menuStore = new MenuStore();
+		
+		//setup land service
+		landService = new LandServiceProvider(flagManager, landManager);
+		Bukkit.getServicesManager().register(LandService.class, landService, this, ServicePriority.Normal);
 	}
 	
 	/**
@@ -132,6 +144,7 @@ public class LandPurchasing extends JavaPlugin{
 	/**
 	 * Handle land-based commands
 	 * Current list of commands are:
+	 *	/priceland
 	 * 	/buyland [plot_name]
 	 * 	/sellland [plot_name]
 	 * 	/listland
@@ -140,8 +153,25 @@ public class LandPurchasing extends JavaPlugin{
 	 *	/removemember [plot_name] [player_name]
 	 * 	/addowner [plot_name] [player_name]
 	 * 	/removemember [plot_name] [player_name]
+	 * 	/buyatm [atm_name]
 	 */
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args){
+		
+		/**
+		 * player wants to buy an atm
+		 */
+		if(cmd.getName().equalsIgnoreCase(LandCommand.BUYATM.getCommand())){
+			if (args.length != 1){
+				sender.sendMessage("Wrong number of arguments.");
+				return false;
+			}
+			else{
+				landManager.buyLand(sender, args[0]);
+				String[] atmArgs = {args[0],"bankFlag","allow"};
+				flagManager.setFlag(sender, atmArgs);
+			}
+			return true;
+		}
 		
 		/**
 		 * player want to know the price of the selected land

@@ -3,6 +3,9 @@ main: com.m0pt0pmatt.LandPurchasing.LandPurchasing
 version: 0.1
 softdepend: [WorldEdit, WorldGuard, Vault, MenuService]
 commands:
+	priceland:
+		description: Get the price of your current selection
+		usage: /priceland
     buyland:
         description: Buy your current selection
         usage: /buyland [plot_name]

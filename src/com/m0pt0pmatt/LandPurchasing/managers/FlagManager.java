@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.m0pt0pmatt.LandPurchasing;
+package com.m0pt0pmatt.LandPurchasing.managers;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -9,6 +9,7 @@ import java.util.Map;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
+import com.m0pt0pmatt.LandPurchasing.LandPurchasing;
 import com.m0pt0pmatt.LandPurchasing.flags.CustomFlag;
 import com.m0pt0pmatt.LandPurchasing.flags.LandFlag;
 import com.sk89q.worldguard.protection.databases.ProtectionDatabaseException;
@@ -62,8 +63,13 @@ public class FlagManager {
 		flags.put(DefaultFlag.GREET_MESSAGE.getName(), new LandFlag(DefaultFlag.GREET_MESSAGE, false, 1000));
 		flags.put(DefaultFlag.FAREWELL_MESSAGE.getName(), new LandFlag(DefaultFlag.FAREWELL_MESSAGE, false, 1000));
 		
+		//TODO: list flags
+		//allowed-cmds and blocked-cmds
+		//to be used for atm's and a bank
+		
 		//custom flags
 		flags.put(CustomFlag.OUTSIDEPISTONS.getFlag().getFlag().getName(),CustomFlag.OUTSIDEPISTONS.getFlag());
+		flags.put(CustomFlag.BANKFLAG.getFlag().getFlag().getName(),CustomFlag.BANKFLAG.getFlag());
 	}
 	
 	public void setDefaultFlags(ProtectedRegion region){
@@ -76,8 +82,9 @@ public class FlagManager {
 		region.setFlag(DefaultFlag.GHAST_FIREBALL, StateFlag.State.DENY);
 		region.setFlag(DefaultFlag.CHEST_ACCESS, StateFlag.State.ALLOW);
 		region.setFlag((StateFlag)CustomFlag.OUTSIDEPISTONS.getFlag().getFlag(), StateFlag.State.DENY);	
+		region.setFlag((StateFlag)CustomFlag.BANKFLAG.getFlag().getFlag(), StateFlag.State.DENY);	
 	}
-	
+
 	/**
 	 * 
 	 * @param sender
@@ -150,40 +157,50 @@ public class FlagManager {
 			if (value.equalsIgnoreCase("allow")){
 				//required warning upon entry/exit of pvp region
 				String s = region.getFlag(DefaultFlag.GREET_MESSAGE);
-				if (s.startsWith(PVP_WARNING)){
-					s = s.substring(PVP_WARNING.length());
-				}
-				if(s != null){
-					assignFlag(region,DefaultFlag.GREET_MESSAGE,PVP_WARNING + s);
-				}
-				else {
+				if(s == null){
 					assignFlag(region,DefaultFlag.GREET_MESSAGE,PVP_WARNING);
+				}
+				else{
+					if(!s.startsWith(PVP_WARNING)){
+						return true;
+					}
+					assignFlag(region,DefaultFlag.GREET_MESSAGE,PVP_WARNING + s);
 				}
 				
 				s = region.getFlag(DefaultFlag.FAREWELL_MESSAGE);
-				if (s.startsWith(PVP_LEAVE)){
-					s = s.substring(PVP_LEAVE.length());
-				}
-				if(s != null){
-					assignFlag(region,DefaultFlag.FAREWELL_MESSAGE,PVP_LEAVE + s);
-				}
-				else {
+				if(s == null){
 					assignFlag(region,DefaultFlag.FAREWELL_MESSAGE,PVP_LEAVE);
+				}
+				else{
+					if(!s.startsWith(PVP_LEAVE)){
+						return true;
+					}
+					assignFlag(region,DefaultFlag.FAREWELL_MESSAGE,PVP_LEAVE + s);
 				}
 			}
 			else if (value.equalsIgnoreCase("deny")){
+			
 				String s = region.getFlag(DefaultFlag.GREET_MESSAGE);
-				assignFlag(region,DefaultFlag.GREET_MESSAGE,s.substring(PVP_WARNING.length()));
+				if(s != null){
+					if(s.equals(PVP_WARNING)){
+						assignFlag(region,DefaultFlag.GREET_MESSAGE,"");
+					}
+					else{
+						assignFlag(region,DefaultFlag.GREET_MESSAGE,s.substring(PVP_WARNING.length()));
+					}
+				}
+				
 				s = region.getFlag(DefaultFlag.FAREWELL_MESSAGE);
-				assignFlag(region,DefaultFlag.FAREWELL_MESSAGE,s.substring(PVP_LEAVE.length()));
-			}
-						
+				if(s != null){
+					if(s.equals(PVP_WARNING)){
+						assignFlag(region,DefaultFlag.FAREWELL_MESSAGE,"");
+					}
+					else{
+						assignFlag(region,DefaultFlag.FAREWELL_MESSAGE,s.substring(PVP_LEAVE.length()));
+					}
+				}
+			}				
 		}
-		
-		//if greeting or farewell messages are being changed, keep the pvp warning if pvp is allowed
-		//TODO:
-		
-		//set the flag
 		
 		//check if the flag is a state flag
 		if (flag instanceof StateFlag){
