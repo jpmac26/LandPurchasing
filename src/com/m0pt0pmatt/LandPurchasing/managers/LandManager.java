@@ -305,6 +305,13 @@ public class LandManager {
 			return;
 		}
 		
+		//make sure the name doesn't start iwth "__bank__", which indicates a bank
+		if (name.startsWith("__bank__")) {
+			sender.sendMessage("Names are not allowed to start with __bank__.");
+			return;
+		}
+		
+		
 		//reassign the name to include the senders name, for uniqueness
 		name = sender.getName() + "__" + name;
 		
@@ -324,6 +331,12 @@ public class LandManager {
 		//make sure name isn't already used
 		if (rm.getRegion(name) != null){
 			sender.sendMessage("I'm sorry, but that name is already in use.");
+			return;
+		}
+		
+		//make sure the name doesn't start iwth "__bank__", which indicates a bank
+		if (name.startsWith("__bank__")) {
+			sender.sendMessage("Names are not allowed to start with __bank__.");
 			return;
 		}
 		
