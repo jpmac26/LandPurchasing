@@ -69,7 +69,7 @@ public class LandPurchasing extends JavaPlugin{
 		weplugin = getWorldEdit();
 		wgplugin = getWorldGuard();
 		setupEconomy();
-		//menuService = Bukkit.getServicesManager().getRegistration(MenuService.class).getProvider();
+		menuService = Bukkit.getServicesManager().getRegistration(MenuService.class).getProvider();
 		
 		//set up the landmanager
 		landManager = new LandManager();
