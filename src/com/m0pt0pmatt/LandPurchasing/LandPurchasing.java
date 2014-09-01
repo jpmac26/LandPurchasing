@@ -14,10 +14,7 @@ import com.m0pt0pmatt.LandPurchasing.managers.FlagManager;
 import com.m0pt0pmatt.LandPurchasing.managers.LandManager;
 import com.m0pt0pmatt.LandPurchasing.managers.LandService;
 import com.m0pt0pmatt.LandPurchasing.managers.LandServiceProvider;
-import com.m0pt0pmatt.LandPurchasing.menus.MenuStore;
-import com.m0pt0pmatt.menuservice.api.MenuService;
-//stop it
-//import com.m0pt0pmatt.menuservice.api.MenuService;
+
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 
@@ -60,19 +57,10 @@ public class LandPurchasing extends JavaPlugin{
 	 */
 	public static WorldEditPlugin weplugin = null;
 	
-	/**
-	 * The MenuService for creating menus
-	 */
-	//public static MenuService menuService = null;
-	
-	public static MenuStore menuStore = null;
-	
 	public static Plugin plugin;
 	
 	private static LandService landService;
-	
-	public static MenuService menuService;
-	
+		
 	/**
 	 * Hook into other plugins
 	 */
@@ -81,7 +69,6 @@ public class LandPurchasing extends JavaPlugin{
 		weplugin = getWorldEdit();
 		wgplugin = getWorldGuard();
 		setupEconomy();
-		menuService = Bukkit.getServicesManager().getRegistration(MenuService.class).getProvider();
 		
 		//set up the landmanager
 		landManager = new LandManager();
@@ -92,14 +79,11 @@ public class LandPurchasing extends JavaPlugin{
 		//set up land listener
 		landListener = new LandListener();
 		Bukkit.getPluginManager().registerEvents(landListener, this);
-		
-		menuStore = new MenuStore();
-		
+				
 		//setup land service
 		landService = new LandServiceProvider(flagManager, landManager);
 		Bukkit.getServicesManager().register(LandService.class, landService, this, ServicePriority.Normal);
 		
-		menuService = Bukkit.getServicesManager().getRegistration(MenuService.class).getProvider();
 	}
 	
 	/**
@@ -275,20 +259,6 @@ public class LandPurchasing extends JavaPlugin{
 			}
 			else{
 				landManager.removeMember(sender, args[0], args[1]);
-			}
-			return true;
-		}
-		
-		/**
-		 * player wants to open the land menu
-		 */
-		if(cmd.getName().equalsIgnoreCase(LandCommand.LANDMENU.getCommand())){
-			if (args.length != 0){
-				sender.sendMessage("Wrong number of arguments.");
-				return false;
-			}
-			else{
-				menuStore.openMainMenu(sender);
 			}
 			return true;
 		}
