@@ -34,7 +34,7 @@ public class LandManager {
 		}
 		
 		//assuming if they have an account, they are a valid identity to add as a member
-		if(!LandPurchasing.economy.hasAccount(memberName)){
+		if(!LandPurchasing.economy.hasAccount(Bukkit.getOfflinePlayer(memberName))){
 			sender.sendMessage(memberName + " is not an existing player");
 			return;
 		}
@@ -247,10 +247,9 @@ public class LandManager {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
 		//refund the player
-		LandPurchasing.economy.depositPlayer(sender.getName(), cost);
-		
+		//LandPurchasing.economy.depositPlayer(sender.getName(), cost);
+		LandPurchasing.economy.depositPlayer(((Player) sender).getPlayer(), cost);
 		//notify the player
 		sender.sendMessage("You have sold the plot of land and have been refunded its original cost of " + cost);
 	}
@@ -283,7 +282,7 @@ public class LandManager {
 		}
 		
 		//get the players economy balance
-		double money = LandPurchasing.economy.getBalance(sender.getName());
+		double money = LandPurchasing.economy.getBalance(((Player) sender).getPlayer());
 		
 		//get the WorldEdit selection
 		Selection selection = LandPurchasing.weplugin.getSelection((Player) sender);
@@ -374,7 +373,7 @@ public class LandManager {
 		}
 		
 		//remove funds from player
-		LandPurchasing.economy.withdrawPlayer(sender.getName(), cost);
+		LandPurchasing.economy.withdrawPlayer(((Player) sender).getPlayer(), cost);
 		
 		//let the player know
 		sender.sendMessage("Congradulations, you now own this region");
