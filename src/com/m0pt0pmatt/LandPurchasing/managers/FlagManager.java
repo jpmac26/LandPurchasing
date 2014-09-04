@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import com.m0pt0pmatt.LandPurchasing.LandPurchasing;
 import com.m0pt0pmatt.LandPurchasing.flags.CustomFlag;
@@ -140,14 +141,16 @@ public class FlagManager {
 		}
 		
 		//check if the player can afford changing this flag
-		if (!LandPurchasing.economy.has(sender.getName(), (int)cost)){
+		if (!LandPurchasing.economy.has(((Player) sender).getPlayer(), (int)cost)){
 			sender.sendMessage("You do not have the required funds. Changing this flag costs $" + (int)cost);
 			return false;
 		}
 		
 		//withdraw the funds from the player to the server
-		LandPurchasing.economy.withdrawPlayer(sender.getName(), (int)cost);
-		LandPurchasing.economy.depositPlayer("__Server", (int)cost);
+		LandPurchasing.economy.withdrawPlayer(((Player) sender).getPlayer(), (int)cost);
+		
+		//Commented out following command for compatibility purposes
+		//LandPurchasing.economy.depositPlayer("__Server", (int)cost);
 		
 		//special cases come first, before the flag is set
 		
