@@ -222,8 +222,21 @@ public class LandPurchasing extends JavaPlugin{
 		 * player wants to change the flags on their land
 		 */
 		if(cmd.getName().equalsIgnoreCase(LandCommand.FLAGLAND.getCommand())){
-			
-			if (args.length < 3){
+			if (args.length == 1) {
+				if (args[0].equalsIgnoreCase("?")) {
+					//print out available flags
+					sender.sendMessage("Use any one of these flags with flagland:");
+					//To avoid spam, we construct one big string
+					String msg = " ";
+					for (String flag : flagManager.getFlags()) {
+						msg = msg + flag + "   ";
+					}
+					sender.sendMessage(msg);
+					return true;
+				}
+				return false;
+			}
+			else if (args.length < 3){
 				sender.sendMessage("Wrong number of arguments.");
 				return false;
 			}

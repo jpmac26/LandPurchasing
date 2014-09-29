@@ -5,6 +5,7 @@ package com.m0pt0pmatt.LandPurchasing.managers;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -89,6 +90,10 @@ public class FlagManager {
 		region.setFlag((StateFlag)CustomFlag.OUTSIDEPISTONS.getFlag().getFlag(), StateFlag.State.DENY);	
 		region.setFlag((StateFlag)CustomFlag.BANKFLAG.getFlag().getFlag(), StateFlag.State.DENY);	
 	}
+	
+	public Set<String> getFlags() {
+		return this.flags.keySet();
+	}
 
 	/**
 	 * 
@@ -122,7 +127,7 @@ public class FlagManager {
 		
 		LandFlag landFlag = flags.get(flagName);
 		if (landFlag == null){
-			sender.sendMessage("Unknown flag name");
+			sender.sendMessage("Unknown flag name. For a list of flags, instead use /flagland ?");
 			return false;
 		}
 		
