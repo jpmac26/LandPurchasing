@@ -7,12 +7,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import com.m0pt0pmatt.LandPurchasing.LandPurchasing;
 import com.m0pt0pmatt.LandPurchasing.flags.CustomFlag;
 import com.m0pt0pmatt.LandPurchasing.flags.LandFlag;
-import com.sk89q.worldguard.protection.databases.ProtectionDatabaseException;
+//import com.sk89q.worldguard.protection.databases.ProtectionDatabaseException;
 import com.sk89q.worldguard.protection.flags.BooleanFlag;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.flags.Flag;
@@ -20,6 +22,7 @@ import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.sk89q.worldguard.protection.flags.StateFlag.State;
 import com.sk89q.worldguard.protection.flags.StringFlag;
 import com.sk89q.worldguard.protection.managers.RegionManager;
+import com.sk89q.worldguard.protection.managers.storage.StorageException;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 /**
@@ -47,6 +50,8 @@ public class FlagManager {
 		flags.put(DefaultFlag.FIRE_SPREAD.getName(), new LandFlag(DefaultFlag.FIRE_SPREAD, false, 0));
 		flags.put(DefaultFlag.GHAST_FIREBALL.getName(), new LandFlag(DefaultFlag.GHAST_FIREBALL, false, 0));
 		flags.put(DefaultFlag.CHEST_ACCESS.getName(), new LandFlag(DefaultFlag.CHEST_ACCESS, false, 0));
+		flags.put(DefaultFlag.DESTROY_VEHICLE.getName(), new LandFlag(DefaultFlag.DESTROY_VEHICLE, false, 0));
+		flags.put(DefaultFlag.PLACE_VEHICLE.getName(), new LandFlag(DefaultFlag.PLACE_VEHICLE, false, 0));
 		
 		//other stateFlags
 		flags.put(DefaultFlag.PVP.getName(), new LandFlag(DefaultFlag.PVP, true, 0.1));
@@ -109,7 +114,7 @@ public class FlagManager {
 			return false;
 		}
 		
-		ProtectedRegion region = rm.getRegion(sender.getName() + "__" + plotName);
+		ProtectedRegion region = rm.getRegion(((Player) sender).getUniqueId() + "__" + plotName);
 		if (region == null){
 			sender.sendMessage("No such region was found.");
 			return false;
@@ -140,14 +145,15 @@ public class FlagManager {
 		}
 		
 		//check if the player can afford changing this flag
-		if (!LandPurchasing.economy.has(sender.getName(), (int)cost)){
+		if (!LandPurchasing.economy.has((OfflinePlayer) sender, (int)cost)){
 			sender.sendMessage("You do not have the required funds. Changing this flag costs $" + (int)cost);
 			return false;
 		}
 		
 		//withdraw the funds from the player to the server
-		LandPurchasing.economy.withdrawPlayer(sender.getName(), (int)cost);
-		LandPurchasing.economy.depositPlayer("__Server", (int)cost);
+		LandPurchasing.economy.withdrawPlayer((OfflinePlayer) sender, (int)cost);
+		//LandPurchasing.economy.depositPlayer("__Server", (int)cost);
+		//removed cause yolo   -sm
 		
 		//special cases come first, before the flag is set
 		
@@ -255,7 +261,7 @@ public class FlagManager {
 		sender.sendMessage("You have successfully set flag " + flagName + " to " + value + " for the plot " + plotName + " for a cost of $" + cost);
 			try {
 				rm.save();
-			} catch (ProtectionDatabaseException e) {
+			} catch (StorageException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}

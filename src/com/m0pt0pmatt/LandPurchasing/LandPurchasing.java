@@ -71,7 +71,7 @@ public class LandPurchasing extends JavaPlugin{
 		setupEconomy();
 		
 		//set up the landmanager
-		landManager = new LandManager();
+		landManager = new LandManager(this, wgplugin);
 		
 		//set up active flags management
 		flagManager = new FlagManager();

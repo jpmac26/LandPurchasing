@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -12,12 +13,25 @@ import com.m0pt0pmatt.LandPurchasing.LandPurchasing;
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.bukkit.selections.Selection;
+import com.sk89q.worldguard.LocalPlayer;
+import com.sk89q.worldguard.bukkit.BukkitPlayer;
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.domains.DefaultDomain;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 public class LandManager {
+	
+	@SuppressWarnings("unused")
+	private LandPurchasing plugin;
+	private WorldGuardPlugin wgplugin;
+	
+	public LandManager(LandPurchasing plugin, WorldGuardPlugin wgplugin) {
+		this.plugin = plugin;
+		this.wgplugin = wgplugin;
+	}
+	
 	
 	/**
 	 * Adds a member to a region
@@ -33,8 +47,14 @@ public class LandManager {
 			return;
 		}
 		
+		if (Bukkit.getPlayer(memberName) == null) {
+			//player isn't currently online with thtat name
+			sender.sendMessage("This player is not currently online!");
+			return;
+		}
+		
 		//assuming if they have an account, they are a valid identity to add as a member
-		if(!LandPurchasing.economy.hasAccount(memberName)){
+		if(!LandPurchasing.economy.hasAccount(Bukkit.getOfflinePlayer(memberName))){
 			sender.sendMessage(memberName + " is not an existing player");
 			return;
 		}
@@ -47,21 +67,21 @@ public class LandManager {
 		}
 		
 		//get the region in question
-		ProtectedRegion region = rm.getRegion(sender.getName() + "__" + regionName);
+		ProtectedRegion region = rm.getRegion(((Player) sender).getUniqueId().toString() + "__" + regionName);
 		if (region == null){
 			sender.sendMessage("No such region was found.");
 			return;
 		}
 		
 		//make sure the command executor is an owner of the plot
-		if(!region.isOwner(sender.getName())){
+		if(!region.isOwner(new BukkitPlayer(wgplugin, Bukkit.getPlayer(memberName)))){
 			sender.sendMessage("You are not the owner of the specified region");
 			return;
 		}
 		
 		//add the player
 		DefaultDomain d = region.getMembers();
-		d.addPlayer(memberName);
+		d.addPlayer(Bukkit.getPlayer(memberName).getUniqueId());
 		region.setMembers(d);
 		
 		sender.sendMessage(memberName + " is now a member of the plot " + regionName);
@@ -89,15 +109,21 @@ public class LandManager {
 		}
 		
 		//get the region in question
-		ProtectedRegion region = rm.getRegion(sender.getName() + "__" + regionName);
+		ProtectedRegion region = rm.getRegion(((Player) sender).getUniqueId().toString() + "__" + regionName);
 		if (region == null){
 			sender.sendMessage("No such region was found.");
 			return;
 		}
 		
 		//make sure the command executor is an owner of the plot
-		if(!region.isOwner(sender.getName())){
+		if(!region.isOwner((LocalPlayer) sender)){
 			sender.sendMessage("You are not the owner of the specified region");
+			return;
+		}
+		
+		//player that they are trying to remove isn't online.
+		if (Bukkit.getPlayer(memberName) == null) {
+			sender.sendMessage("That player is not currently online.");
 			return;
 		}
 		
@@ -105,7 +131,7 @@ public class LandManager {
 		DefaultDomain d = region.getMembers();
 		
 		//check if the player actually was a member
-		if(!d.contains(memberName)){
+		if(!d.contains(new BukkitPlayer(wgplugin, Bukkit.getPlayer(memberName)))){
 			sender.sendMessage("Player " + memberName + " is not a member of this region");
 			return;
 		}
@@ -135,13 +161,13 @@ public class LandManager {
 		for (ProtectedRegion r: regions.values()){
 			
 			//if the player owns the plot
-			if (r.isOwner(sender.getName().toLowerCase())){
+			if (r.isOwner(new BukkitPlayer(wgplugin, (Player) sender))){
 				
 				String plotName = r.getId();
 				
 				//make sure plot is a valid land plot
-				if (plotName.startsWith(sender.getName().toLowerCase())){
-					regionList.add(plotName.substring(sender.getName().length() + 2, plotName.length()));
+				if (plotName.startsWith(((Player) sender).getUniqueId().toString())){
+					regionList.add(plotName.substring(((Player) sender).getUniqueId().toString().length() + 2, plotName.length()));
 				}
 			}
 		}
@@ -226,7 +252,7 @@ public class LandManager {
 			return;
 		}
 		
-		ProtectedRegion region = rm.getRegion(sender.getName() + "__" + regionName);
+		ProtectedRegion region = rm.getRegion(((Player) sender).getUniqueId().toString() + "__" + regionName);
 		if (region == null){
 			sender.sendMessage("No such region was found.");
 			return;
@@ -239,7 +265,7 @@ public class LandManager {
 		double cost = getCost(height, length, width);
 		
 		//remove the region
-		rm.removeRegion(sender.getName() + "__" + regionName);
+		rm.removeRegion(((Player) sender).getUniqueId().toString() + "__" + regionName);
 		
 		//save WorldGuard
 		try {
@@ -249,7 +275,7 @@ public class LandManager {
 		}
 		
 		//refund the player
-		LandPurchasing.economy.depositPlayer(sender.getName(), cost);
+		LandPurchasing.economy.depositPlayer((OfflinePlayer) sender, cost);
 		
 		//notify the player
 		sender.sendMessage("You have sold the plot of land and have been refunded its original cost of " + cost);
@@ -283,7 +309,7 @@ public class LandManager {
 		}
 		
 		//get the players economy balance
-		double money = LandPurchasing.economy.getBalance(sender.getName());
+		double money = LandPurchasing.economy.getBalance((OfflinePlayer) sender);
 		
 		//get the WorldEdit selection
 		Selection selection = LandPurchasing.weplugin.getSelection((Player) sender);
@@ -313,7 +339,7 @@ public class LandManager {
 		
 		
 		//reassign the name to include the senders name, for uniqueness
-		name = sender.getName() + "__" + name;
+		name = ((Player) sender).getUniqueId().toString() + "__" + name;
 		
 		//check if player has enough funds
 		if (money < cost){
@@ -363,7 +389,7 @@ public class LandManager {
 		
 		//add player to the owner of the new region
 		DefaultDomain newDomain = new DefaultDomain();
-		newDomain.addPlayer(sender.getName());
+		newDomain.addPlayer(((Player) sender).getUniqueId());
 		rm.getRegion(name).setOwners(newDomain);
 		
 		//save WorldGuard
@@ -374,10 +400,10 @@ public class LandManager {
 		}
 		
 		//remove funds from player
-		LandPurchasing.economy.withdrawPlayer(sender.getName(), cost);
+		LandPurchasing.economy.withdrawPlayer((OfflinePlayer) sender, cost);
 		
 		//let the player know
-		sender.sendMessage("Congradulations, you now own this region");
+		sender.sendMessage("Congratulations, you now own this region");
 	}
 	
 	/**
