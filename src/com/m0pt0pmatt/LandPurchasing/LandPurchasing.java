@@ -1,10 +1,13 @@
 package com.m0pt0pmatt.LandPurchasing;
 
+import java.util.UUID;
+
 import net.milkbowl.vault.economy.Economy;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.ServicePriority;
@@ -14,9 +17,13 @@ import com.m0pt0pmatt.LandPurchasing.managers.FlagManager;
 import com.m0pt0pmatt.LandPurchasing.managers.LandManager;
 import com.m0pt0pmatt.LandPurchasing.managers.LandService;
 import com.m0pt0pmatt.LandPurchasing.managers.LandServiceProvider;
-
+import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
+import com.sk89q.worldguard.LocalPlayer;
+import com.sk89q.worldguard.bukkit.BukkitPlayer;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+import com.sk89q.worldguard.protection.ApplicableRegionSet;
+import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 /**
  * LandPurchasing is a plugin which allows players to purchase custom plots of protected land
@@ -71,7 +78,7 @@ public class LandPurchasing extends JavaPlugin{
 		setupEconomy();
 		
 		//set up the landmanager
-		landManager = new LandManager();
+		landManager = new LandManager(this, wgplugin);
 		
 		//set up active flags management
 		flagManager = new FlagManager();
@@ -222,8 +229,21 @@ public class LandPurchasing extends JavaPlugin{
 		 * player wants to change the flags on their land
 		 */
 		if(cmd.getName().equalsIgnoreCase(LandCommand.FLAGLAND.getCommand())){
-			
-			if (args.length < 3){
+			if (args.length == 1) {
+				if (args[0].equalsIgnoreCase("?")) {
+					//print out available flags
+					sender.sendMessage("Use any one of these flags with flagland:");
+					//To avoid spam, we construct one big string
+					String msg = " ";
+					for (String flag : flagManager.getFlags()) {
+						msg = msg + flag + "   ";
+					}
+					sender.sendMessage(msg);
+					return true;
+				}
+				return false;
+			}
+			else if (args.length < 3){
 				sender.sendMessage("Wrong number of arguments.");
 				return false;
 			}
@@ -259,6 +279,43 @@ public class LandPurchasing extends JavaPlugin{
 			}
 			else{
 				landManager.removeMember(sender, args[0], args[1]);
+			}
+			return true;
+		}
+		
+		if (cmd.getName().equalsIgnoreCase(LandCommand.LANDINFO.getCommand())) {
+			Player player;
+			ApplicableRegionSet regions;
+			ProtectedRegion region;
+			if (!(sender instanceof Player)) {
+				this.getLogger().info("You cannot run this command from the terminal!");
+				return false;
+			}
+			player = (Player) sender;
+			regions = wgplugin.getRegionManager(player.getWorld()).getApplicableRegions(player.getLocation().add(0, -1, 0));
+			if (regions.size() == 0) {
+				//not in any regions
+				sender.sendMessage("You are not currently in a region!");
+				return true;
+			}
+			//theoretically, there will only be one region. we're just going to grab the first under the first
+			region = (ProtectedRegion) regions.getRegions().toArray()[0];
+			
+			if (region.isOwner(new BukkitPlayer(wgplugin, player))) {
+				player.sendMessage("You own this region.");
+				player.sendMessage("Region name: " + region.getId().substring( player.getUniqueId().toString().length() + 2     , region.getId().length()));
+				player.sendMessage("Members: ");
+				for (String name : region.getMembers().getPlayers()) {
+					player.sendMessage(Bukkit.getOfflinePlayer(UUID.fromString(name.substring(5))).getName());
+				}
+				BlockVector min, max;
+				min = region.getMinimumPoint();
+				max = region.getMaximumPoint();
+				player.sendMessage("This region extends from (" + min.getBlockX() + ", " + min.getBlockY() + ", " + min.getBlockZ() + ") to (" + max.getBlockX() + ", " + max.getBlockY() + ", " + max.getBlockZ() + ")");
+			}
+			else {
+				//tell them who owns it
+				player.sendMessage("This land is owned by " + Bukkit.getOfflinePlayer(UUID.fromString(region.getOwners().toPlayersString().substring(5))).getName());
 			}
 			return true;
 		}

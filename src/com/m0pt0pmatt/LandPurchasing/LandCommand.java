@@ -13,6 +13,7 @@ public enum LandCommand {
 	SELLLAND("sellland"),
 	LISTLAND("listland"),
 	FLAGLAND("flagland"),
+	LANDINFO("landinfo"),
 	ADDMEMBERLAND("addmember"),
 	REMOVEMEMBERLAND("removemember"),
 	ADDOWNERLAND("addowner"),
