@@ -135,7 +135,7 @@ public class LandManager {
 		for (ProtectedRegion r: regions.values()){
 			
 			//if the player owns the plot
-			if (r.isOwner(sender.getName().toLowerCase())){
+			if (r.isOwner(sender.getName().toLowerCase()) || r.isOwner(sender.getName().toLowerCase() + "*")){
 				
 				String plotName = r.getId();
 				
