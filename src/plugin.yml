@@ -36,3 +36,6 @@ commands:
     land:
         description: A wrapper command for all land-related commands
         usage: /land [command] [arguments]
+    landinfo:
+        description: gives a player information about the land they are currently in
+        usage: /landinfo
