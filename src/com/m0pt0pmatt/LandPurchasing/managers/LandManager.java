@@ -74,7 +74,7 @@ public class LandManager {
 		}
 		
 		//make sure the command executor is an owner of the plot
-		if(!region.isOwner(new BukkitPlayer(wgplugin, Bukkit.getPlayer(memberName)))){
+		if(!region.isOwner(new BukkitPlayer(wgplugin, (Player) sender))){
 			sender.sendMessage("You are not the owner of the specified region");
 			return;
 		}
