@@ -1,12 +1,18 @@
 package com.m0pt0pmatt.LandPurchasing;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.UUID;
 
 import net.milkbowl.vault.economy.Economy;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -19,7 +25,6 @@ import com.m0pt0pmatt.LandPurchasing.managers.LandService;
 import com.m0pt0pmatt.LandPurchasing.managers.LandServiceProvider;
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
-import com.sk89q.worldguard.LocalPlayer;
 import com.sk89q.worldguard.bukkit.BukkitPlayer;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
@@ -67,6 +72,54 @@ public class LandPurchasing extends JavaPlugin{
 	public static Plugin plugin;
 	
 	private static LandService landService;
+	
+	private static final String configFileName = "config.yml";
+	
+	private static YamlConfiguration config;
+	
+	private static final double version = 1.23;
+	
+	/**
+	 * Load up configuration
+	 */
+	public void onLoad() {
+		File configFile = new File(this.getDataFolder(), configFileName);
+		
+		//make sure our config file is valid
+		if (!configFile.exists() || configFile.isDirectory()) {
+			
+			getLogger().warning(ChatColor.YELLOW + "Invalid Configuration file "
+					+ "for LandPurchasing Plugin!" + ChatColor.RESET);
+			getLogger().warning("Running with Empty Configuration");
+			
+			//create empty default config
+			config = new YamlConfiguration();
+			config.set("version", LandPurchasing.version);
+			
+			//creat empty plot section
+			config.createSection("LeasePlots");
+			
+			return;
+		}
+		
+		//found file, load up config
+		config = new YamlConfiguration();
+		
+		
+		try {
+			config.load(configFile);
+		} catch (Exception e) {
+			getLogger().warning(e.getMessage());
+			
+			getLogger().warning("Running with Empty Configuration");
+			//just set up a default one
+			config = new YamlConfiguration();
+			config.set("version", LandPurchasing.version);
+			
+			//create empty plot section
+			config.createSection("LeasePlots");
+		}
+	}
 		
 	/**
 	 * Hook into other plugins
