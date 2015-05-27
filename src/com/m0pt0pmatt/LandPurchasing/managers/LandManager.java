@@ -366,15 +366,10 @@ public class LandManager {
 		}
 		
 		//make sure selection doesn't include other regions
-		for (int x = b1.getBlockX(); x < b2.getBlockX() + 1; x++){
-			for (int y = b1.getBlockY(); y < b2.getBlockY() + 1; y++){
-				for (int z = b1.getBlockZ(); z < b2.getBlockZ() + 1; z++){
-					if(!(rm.getApplicableRegionsIDs(new Vector(x,y,z)).isEmpty())){
-						sender.sendMessage("I'm sorry, but your selection includes another region");
-						return;
-					}
-				}
-			}
+		if (!selectionEmpty(rm, b1, b2)) {
+			//contains a purchased region
+			sender.sendMessage("I'm sorry, but your selection includes another region");
+			return;
 		}
 		
 		//create WorldGuard Region
@@ -414,6 +409,33 @@ public class LandManager {
 	 */
 	public static double getCost(double height, double length, double width){
 		return (5 + height)*(length * width);
+	}
+	
+	
+	/**
+	 * Checks whether or not the selected region between the two passed vectors contain
+	 * a region that's already purchased
+	 * @param rm The region manager to check with
+	 * @param b1 The first block vector to check between. This should be the 'smallest'
+	 * @param b2 The second block vector. 
+	 * @return True - Selection did NOT contain a purchased region.<br />
+	 * False - Selection is not free of any purchased regions
+	 */
+	private boolean selectionEmpty(RegionManager rm, BlockVector b1, BlockVector b2) {
+		//go through every block and check if it's purchased
+		for (int x = b1.getBlockX(); x < b2.getBlockX() + 1; x++){
+			for (int y = b1.getBlockY(); y < b2.getBlockY() + 1; y++){
+				for (int z = b1.getBlockZ(); z < b2.getBlockZ() + 1; z++){
+					if(!(rm.getApplicableRegionsIDs(new Vector(x,y,z)).isEmpty())){
+						//this block is purchased!
+						return false;
+					}
+				}
+			}
+		}
+		
+		//none of the blocks were already purchased!
+		return true;
 	}
 
 }
