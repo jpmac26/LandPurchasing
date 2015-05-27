@@ -274,10 +274,8 @@ public class LandManager {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
 		//refund the player
 		LandPurchasing.economy.depositPlayer((OfflinePlayer) sender, cost);
-		
 		//notify the player
 		sender.sendMessage("You have sold the plot of land and have been refunded its original cost of " + cost);
 	}

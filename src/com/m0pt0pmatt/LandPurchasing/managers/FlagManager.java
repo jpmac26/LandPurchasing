@@ -15,7 +15,7 @@ import org.bukkit.entity.Player;
 import com.m0pt0pmatt.LandPurchasing.LandPurchasing;
 import com.m0pt0pmatt.LandPurchasing.flags.CustomFlag;
 import com.m0pt0pmatt.LandPurchasing.flags.LandFlag;
-//import com.sk89q.worldguard.protection.databases.ProtectionDatabaseException;
+
 import com.sk89q.worldguard.protection.flags.BooleanFlag;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.flags.Flag;
@@ -87,8 +87,10 @@ public class FlagManager {
 		region.setFlag(DefaultFlag.FIRE_SPREAD, StateFlag.State.DENY);
 		region.setFlag(DefaultFlag.GHAST_FIREBALL, StateFlag.State.DENY);
 		region.setFlag(DefaultFlag.CHEST_ACCESS, StateFlag.State.ALLOW);
+		region.setFlag(DefaultFlag.ENTITY_ITEM_FRAME_DESTROY, StateFlag.State.DENY);
+		region.setFlag(DefaultFlag.ENTITY_PAINTING_DESTROY, StateFlag.State.DENY);
 		region.setFlag((StateFlag)CustomFlag.OUTSIDEPISTONS.getFlag().getFlag(), StateFlag.State.DENY);	
-		region.setFlag((StateFlag)CustomFlag.BANKFLAG.getFlag().getFlag(), StateFlag.State.DENY);	
+		//region.setFlag((StateFlag)CustomFlag.BANKFLAG.getFlag().getFlag(), StateFlag.State.DENY);	
 	}
 	
 	public Set<String> getFlags() {
