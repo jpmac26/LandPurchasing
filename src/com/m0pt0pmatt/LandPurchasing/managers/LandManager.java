@@ -54,6 +54,7 @@ public class LandManager {
 		}
 		
 		//assuming if they have an account, they are a valid identity to add as a member
+		//no way currently around deprecated call, as it's not the player to be added calling the method
 		if(!LandPurchasing.economy.hasAccount(Bukkit.getOfflinePlayer(memberName))){
 			sender.sendMessage(memberName + " is not an existing player");
 			return;
