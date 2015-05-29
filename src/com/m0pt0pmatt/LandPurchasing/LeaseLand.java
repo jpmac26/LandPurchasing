@@ -73,7 +73,7 @@ public class LeaseLand extends Land {
 	
 	
 	public LeaseLand(ProtectedCuboidRegion region) {
-		super();
+		super(region);
 		dueDate = null;
 	}
 	
@@ -107,10 +107,11 @@ public class LeaseLand extends Land {
 		config.set("Block2.Y", this.land.getMinimumPoint().getBlockY());
 		config.set("Block2.Z", this.land.getMinimumPoint().getBlockZ());
 		
-		config.set("DueDate.Day", dueDate.getDay());
-		config.set("DueDate.Month", dueDate.getMonth());
-		config.set("DueDate.Year", dueDate.getYear());
-		
+		if (dueDate != null) {
+			config.set("DueDate.Day", dueDate.getDay());
+			config.set("DueDate.Month", dueDate.getMonth());
+			config.set("DueDate.Year", dueDate.getYear());
+		}
 		return config;
 	}
 }
