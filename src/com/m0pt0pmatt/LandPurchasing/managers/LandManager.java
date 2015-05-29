@@ -347,7 +347,7 @@ public class LandManager {
 				
 		
 		//check for invalid name
-		if (!validName(rm, name)) {
+		if (!validName(name)) {
 			sender.sendMessage("Invalid land name!");
 			return;
 		}
@@ -443,7 +443,12 @@ public class LandManager {
 		return true;
 	}
 	
-	private boolean validName(RegionManager rm, String name) {
+	/**
+	 * Checks if the passed name is valid, according to the predefined name rules 
+	 * @param name Name to check
+	 * @return true if the name is valid, and false if it violates a rule
+	 */
+	private boolean validName(String name) {
 		
 		if (name.isEmpty() || name.equals(null)){
 			return false;
