@@ -44,6 +44,10 @@ public class LandManager {
 		return leasePlots;
 	}
 	
+	public void addLeasePlot(LeaseLand plot) {
+		leasePlots.add(plot);
+	}
+	
 	
 	/**
 	 * Adds a member to a region

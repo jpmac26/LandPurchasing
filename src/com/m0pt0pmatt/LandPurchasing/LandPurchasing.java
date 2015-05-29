@@ -1,6 +1,7 @@
 package com.m0pt0pmatt.LandPurchasing;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.UUID;
 
 import net.milkbowl.vault.economy.Economy;
@@ -33,7 +34,7 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
  * LandPurchasing is a plugin which allows players to purchase custom plots of protected land
  * LandPurchasing uses WorldGuard as its backend.
  * 
- * @author Matthew Broomfield and Lucas Stuyvesant
+ * @author Matthew Broomfield, Lucas Stuyvesant, and Skyler Manzanares
  */
 public class LandPurchasing extends JavaPlugin{
 
@@ -159,6 +160,7 @@ public class LandPurchasing extends JavaPlugin{
 		}
 		
 		getLogger().info("Loading leased plot information");
+		int count = 0;
 		for (String plotName : plotList.getKeys(false)) {
 			//go through to each plot and load it up
 			if (plotName.trim().isEmpty()) {
@@ -166,8 +168,13 @@ public class LandPurchasing extends JavaPlugin{
 				continue;
 			}
 			
-			//TODO finish this!
+			//create a LeaseLand object from the configuration section
+			LeaseLand plot = LeaseLand.fromConfig(plotName, plotList.getConfigurationSection(plotName));
+			
+			landManager.addLeasePlot(plot);
+			count ++;
 		}
+		getLogger().info("Loaded " + count + " plots!");
 	}
 	
 	@Override
@@ -178,12 +185,27 @@ public class LandPurchasing extends JavaPlugin{
 		
 		RegionManager rm = wgplugin.getRegionManager(Bukkit.getWorld("Homeworld"));
 		
+		//save out config!
+		getLogger().info("Saving plot information...");
+		YamlConfiguration newConfig = new YamlConfiguration();
+		newConfig.set("version", config.get("version"));
+		
+		newConfig.createSection("LeasePlots");
+		for (LeaseLand land : landManager.getLeasePlots()) {
+			newConfig.createSection("LeasePlots." + land.land.getId(), land.toConfig().getValues(true));
+		}
+		
+		try {
+			newConfig.save(new File(getDataFolder(), configFileName));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		getLogger().info("Removing leased plots...");
 		for (LeaseLand land : landManager.getLeasePlots()) {
 			rm.removeRegion(land.land.getId());
 		}
-		
-		//TODO save out ocnfig!
 	}
 	
 	/**

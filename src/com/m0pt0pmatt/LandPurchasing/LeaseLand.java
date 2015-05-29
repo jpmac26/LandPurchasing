@@ -7,7 +7,6 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import com.m0pt0pmatt.LandPurchasing.Scheduling.Date;
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
-import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 /**
  * Holds information about a plot of land that is able to be or is being leased out.<br />
