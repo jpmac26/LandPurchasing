@@ -171,6 +171,9 @@ public class LandPurchasing extends JavaPlugin{
 			//create a LeaseLand object from the configuration section
 			LeaseLand plot = LeaseLand.fromConfig(plotName, plotList.getConfigurationSection(plotName));
 			
+			//check and make sure this region doesn't intersect any others
+			//TODO add check here? What about spawn region?
+			
 			landManager.addLeasePlot(plot);
 			count ++;
 		}

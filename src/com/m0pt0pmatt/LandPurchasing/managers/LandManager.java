@@ -412,6 +412,11 @@ public class LandManager {
 		sender.sendMessage("Congratulations, you now own this region");
 	}
 	
+	/**
+	 * Sets up the given property to be able to be leased out
+	 * @param sender
+	 * @param name
+	 */
 	public void lease(CommandSender sender, String name) {
 		
 		//perform basic service checks
@@ -497,7 +502,71 @@ public class LandManager {
 	
 	public void leaseLand(CommandSender sender, String name) {
 		
+		//make sure its a player
+		if (!(sender instanceof Player)){
+			sender.sendMessage("Sorry, only players can execute this command");
+			return;
+		}
+		
+		//make sure the player is in the right world
+		if (!(Bukkit.getWorld("HomeWorld").getPlayers().contains(sender))){
+			sender.sendMessage("Sorry, you have to be on the HomeWorld to buy land");
+			return;
+		}
+		
+		//make sure there is an economy
+		if (LandPurchasing.economy == null){
+			if (!LandPurchasing.setupEconomy()){
+				sender.sendMessage("Error. No economy plugin loaded.");
+				return;
+			}
+		}
+		
+		
+		//get the players economy balance
+		double money = LandPurchasing.economy.getBalance((OfflinePlayer) sender);
+		
+		//get the region manager for the homeworld
+		RegionManager rm = LandPurchasing.wgplugin.getRegionManager(Bukkit.getWorld("HomeWorld"));
+		if (rm == null){
+			sender.sendMessage("No region manager for the homeworld");
+			return;
+		}
+		
+		ProtectedRegion region = rm.getRegion(name);
+		if (region == null) {
+			sender.sendMessage("Invalid plot name!");
+			return;
+		}
+		
+		
+		//what do we need to do? 
+				/*
+				 * well we now need to make sure that the passed ID is a real one,
+				 * and that it's for lease. also check money requirements.
+				 * Then sub the money, generate a new due-date, and add the person as an
+				 * owner 
+				 */
+		
 	}
+	
+	
+	
+	
+	
+	
+	//TODO scheduled lease checks!!!!!
+	//     remove owner, due date null!
+	//TODO list leased land
+	//TODO pay lease command?
+	//TODO lease book!
+	//TODO lease sign!
+	
+	
+	
+	
+	
+	
 	
 	/**
 	 * Method for generating the cost of a selection of land
@@ -559,6 +628,22 @@ public class LandManager {
 		}
 		
 		return true;
+	}
+	
+	/**
+	 * Iterates over lease plot set and returns the LeaseLand object that matches the 
+	 * passed ID, or null if none do
+	 * @param id
+	 * @return
+	 */
+	private LeaseLand getPlot(String id) {
+		for (LeaseLand plot : leasePlots) {
+			if (plot.getID().equals(id)) {
+				return plot;
+			}
+		}
+		
+		return null;
 	}
 
 }
