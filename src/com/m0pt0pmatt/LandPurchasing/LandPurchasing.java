@@ -1,7 +1,6 @@
 package com.m0pt0pmatt.LandPurchasing;
 
 import java.io.File;
-import java.util.Date;
 import java.util.UUID;
 
 import net.milkbowl.vault.economy.Economy;
@@ -27,6 +26,7 @@ import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldguard.bukkit.BukkitPlayer;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
+import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 /**
@@ -168,6 +168,22 @@ public class LandPurchasing extends JavaPlugin{
 			
 			//TODO finish this!
 		}
+	}
+	
+	@Override
+	public void onDisable() {
+		
+		//remove all leased plot locations, so we can recreate them on next enable and not
+		//create overlapping regions!
+		
+		RegionManager rm = wgplugin.getRegionManager(Bukkit.getWorld("Homeworld"));
+		
+		getLogger().info("Removing leased plots...");
+		for (LeaseLand land : landManager.getLeasePlots()) {
+			rm.removeRegion(land.land.getId());
+		}
+		
+		//TODO save out ocnfig!
 	}
 	
 	/**
