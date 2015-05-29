@@ -22,12 +22,17 @@ public class Land {
 	
 	public Land(ProtectedCuboidRegion region){
 		land = region;
+		id = land.getId();
 		chunks = new ArrayList<BlockVector2D>();
 		addChunks(region);
 		int xDim = region.getMaximumPoint().getBlockX() - region.getMinimumPoint().getBlockX() + 1;
 		int yDim = region.getMaximumPoint().getBlockY() - region.getMinimumPoint().getBlockY() + 1;
 		int zDim = region.getMaximumPoint().getBlockZ() - region.getMinimumPoint().getBlockZ() + 1;
 		costPerBlock = getCost(xDim, yDim, zDim) / (xDim * yDim * zDim);
+	}
+	
+	public String getID() {
+		return this.id;
 	}
 	
 	/**
