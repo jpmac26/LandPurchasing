@@ -314,6 +314,13 @@ public class LandManager {
 		//get the WorldEdit selection
 		Selection selection = LandPurchasing.weplugin.getSelection((Player) sender);
 		
+		//get the region manager for the homeworld
+				RegionManager rm = LandPurchasing.wgplugin.getRegionManager(Bukkit.getWorld("HomeWorld"));
+				if (rm == null){
+					sender.sendMessage("No region manager for the homeworld");
+					return;
+				}
+		
 		//make sure it's not null or empty
 		if (selection == null || selection.getArea() == 0) {
 			sender.sendMessage("You must select a region first!");
@@ -331,44 +338,26 @@ public class LandManager {
 		//notify the player of the cost
 		sender.sendMessage("cost: " + cost);
 		
+		//check if player has enough funds
+		if (money < cost){
+				sender.sendMessage("Not enough funds. Your selection costs " + cost + " but you only have " + money + ".");
+				return;
+			}
+				
+		
 		//check for invalid name
-		if (name.isEmpty() || name.equals(null)){
-			sender.sendMessage("Bad name. Could not create region.");
+		if (!validName(rm, name)) {
+			sender.sendMessage("Invalid land name!");
 			return;
 		}
-		
-		//make sure the name doesn't start iwth "__bank__", which indicates a bank
-		if (name.startsWith("__bank__")) {
-			sender.sendMessage("Names are not allowed to start with __bank__.");
-			return;
-		}
-		
 		
 		//reassign the name to include the senders name, for uniqueness
 		name = ((Player) sender).getUniqueId().toString() + "__" + name;
-		
-		//check if player has enough funds
-		if (money < cost){
-			sender.sendMessage("Not enough funds. Your selection costs " + cost + " but you only have " + money + ".");
-			return;
-		}
-		
-		//get the region manager for the homeworld
-		RegionManager rm = LandPurchasing.wgplugin.getRegionManager(Bukkit.getWorld("HomeWorld"));
-		if (rm == null){
-			sender.sendMessage("No region manager for the homeworld");
-			return;
-		}
-		
+				
+
 		//make sure name isn't already used
 		if (rm.getRegion(name) != null){
 			sender.sendMessage("I'm sorry, but that name is already in use.");
-			return;
-		}
-		
-		//make sure the name doesn't start iwth "__bank__", which indicates a bank
-		if (name.startsWith("__bank__")) {
-			sender.sendMessage("Names are not allowed to start with __bank__.");
 			return;
 		}
 		
@@ -442,6 +431,20 @@ public class LandManager {
 		}
 		
 		//none of the blocks were already purchased!
+		return true;
+	}
+	
+	private boolean validName(RegionManager rm, String name) {
+		
+		if (name.isEmpty() || name.equals(null)){
+			return false;
+		}
+		
+		//make sure the name doesn't start iwth "__bank__", which indicates a bank
+		if (name.startsWith("__bank__")) {
+			return false;
+		}
+		
 		return true;
 	}
 
