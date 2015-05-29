@@ -37,9 +37,12 @@ commands:
         description: A wrapper command for all land-related commands
         usage: /land [command] [arguments]
     landinfo:
-        description: gives a player information about the land they are currently in
+        description: Gives a player information about the land they are currently in
         usage: /landinfo
     leaseland:
+        description: Leases the specified property, if it's available
+        usage: /leaseland [plot_name]
+    lease:
         description: Sets the designated plot of land for leasing
         usage: /leaseland [plot_name]
         permission: op
