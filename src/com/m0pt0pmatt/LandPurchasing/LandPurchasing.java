@@ -1,8 +1,7 @@
 package com.m0pt0pmatt.LandPurchasing;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.util.Date;
 import java.util.UUID;
 
 import net.milkbowl.vault.economy.Economy;
@@ -11,7 +10,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -144,6 +143,31 @@ public class LandPurchasing extends JavaPlugin{
 		landService = new LandServiceProvider(flagManager, landManager);
 		Bukkit.getServicesManager().register(LandService.class, landService, this, ServicePriority.Normal);
 		
+		//load up config
+		//TODO make version info useful
+		getLogger().info("Ignoring version information in config...");
+		ConfigurationSection plotList = config.getConfigurationSection("LeasePlots");
+		if (plotList == null) {
+			getLogger().warning("Error encountered when reading from config file: Null LeasePlots section!");
+			return;
+		}
+		
+		if (plotList.getKeys(false).isEmpty()) {
+			//no leased plots
+			getLogger().info("Found no leased plot information to load!");
+			return;
+		}
+		
+		getLogger().info("Loading leased plot information");
+		for (String plotName : plotList.getKeys(false)) {
+			//go through to each plot and load it up
+			if (plotName.trim().isEmpty()) {
+				getLogger().warning("Found funky key in LeasePlot section...");
+				continue;
+			}
+			
+			//TODO finish this!
+		}
 	}
 	
 	/**
