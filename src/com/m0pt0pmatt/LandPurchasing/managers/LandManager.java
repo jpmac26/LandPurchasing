@@ -40,6 +40,10 @@ public class LandManager {
 		leasePlots = new HashSet<LeaseLand>();
 	}
 	
+	public Set<LeaseLand> getLeasePlots() {
+		return leasePlots;
+	}
+	
 	
 	/**
 	 * Adds a member to a region
