@@ -1,8 +1,10 @@
 package com.m0pt0pmatt.LandPurchasing.managers;
 
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -10,6 +12,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.m0pt0pmatt.LandPurchasing.LandPurchasing;
+import com.m0pt0pmatt.LandPurchasing.LeaseLand;
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.bukkit.selections.Selection;
@@ -27,9 +30,14 @@ public class LandManager {
 	private LandPurchasing plugin;
 	private WorldGuardPlugin wgplugin;
 	
+	private Set<LeaseLand> leasePlots;
+	
+	
 	public LandManager(LandPurchasing plugin, WorldGuardPlugin wgplugin) {
 		this.plugin = plugin;
 		this.wgplugin = wgplugin;
+		
+		leasePlots = new HashSet<LeaseLand>();
 	}
 	
 	
@@ -452,7 +460,7 @@ public class LandManager {
 		//TODO confirmation period
 		
 		//passed all checks, not create and register region
-		ProtectedRegion region = new ProtectedCuboidRegion(name, b1, b2);
+		ProtectedCuboidRegion region = new ProtectedCuboidRegion(name, b1, b2);
 		
 		//set proper flags
 		LandPurchasing.flagManager.setDefaultFlags(region);
@@ -471,6 +479,9 @@ public class LandManager {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
+		//registere plot with our own database
+		leasePlots.add(new LeaseLand(region));
 		
 		sender.sendMessage("Leased plot has been successfully registered!");
 		
