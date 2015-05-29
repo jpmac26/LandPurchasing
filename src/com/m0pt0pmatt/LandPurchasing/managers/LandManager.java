@@ -9,6 +9,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import com.avaje.ebean.validation.Pattern;
 import com.m0pt0pmatt.LandPurchasing.LandPurchasing;
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.Vector;
@@ -437,6 +438,11 @@ public class LandManager {
 	private boolean validName(RegionManager rm, String name) {
 		
 		if (name.isEmpty() || name.equals(null)){
+			return false;
+		}
+		
+		//no special characaters
+		if (!name.matches("[a-zA-Z0-9]+")) {
 			return false;
 		}
 		
