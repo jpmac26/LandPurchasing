@@ -307,11 +307,18 @@ public class LandManager {
 			}
 		}
 		
+		
 		//get the players economy balance
 		double money = LandPurchasing.economy.getBalance((OfflinePlayer) sender);
 		
 		//get the WorldEdit selection
 		Selection selection = LandPurchasing.weplugin.getSelection((Player) sender);
+		
+		//make sure it's not null or empty
+		if (selection == null || selection.getArea() == 0) {
+			sender.sendMessage("You must select a region first!");
+			return;
+		}
 		BlockVector b1 = new BlockVector(selection.getMinimumPoint().getX(), selection.getMinimumPoint().getY(), selection.getMinimumPoint().getZ());
 		BlockVector b2 = new BlockVector(selection.getMaximumPoint().getX(), selection.getMaximumPoint().getY(), selection.getMaximumPoint().getZ());
 		
