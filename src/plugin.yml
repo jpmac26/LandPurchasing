@@ -1,7 +1,7 @@
 name: LandPurchasing
 main: com.m0pt0pmatt.LandPurchasing.LandPurchasing
-version: 0.1
-softdepend: [WorldEdit, WorldGuard, Vault, MenuService]
+version: 0.75
+softdepend: [WorldEdit, WorldGuard, Vault, MenuService, BetterEconomy]
 commands:
     priceland:
         description: Get the price of your current selection
@@ -39,3 +39,7 @@ commands:
     landinfo:
         description: gives a player information about the land they are currently in
         usage: /landinfo
+    leaseland:
+        description: Sets the designated plot of land for leasing
+        usage: /leaseland [plot_name]
+        permission: op
