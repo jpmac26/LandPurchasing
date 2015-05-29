@@ -9,7 +9,6 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import com.avaje.ebean.validation.Pattern;
 import com.m0pt0pmatt.LandPurchasing.LandPurchasing;
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.Vector;
@@ -398,6 +397,82 @@ public class LandManager {
 	}
 	
 	public void lease(CommandSender sender, String name) {
+		
+		//perform basic service checks
+		//make sure its a player
+		if (!(sender instanceof Player)){
+			sender.sendMessage("Sorry, only players can execute this command");
+			return;
+		}
+				
+		//make sure the player is in the right world
+		if (!(Bukkit.getWorld("HomeWorld").getPlayers().contains(sender))){
+			sender.sendMessage("Sorry, you have to be on the HomeWorld to buy land");
+			return;
+		}
+				
+		//make sure there is an economy
+		if (LandPurchasing.economy == null){
+			if (!LandPurchasing.setupEconomy()){
+				sender.sendMessage("Error. No economy plugin loaded.");
+				return;
+			}
+		}
+		
+		//grab the region manager and selection
+		RegionManager rm = LandPurchasing.wgplugin.getRegionManager(Bukkit.getWorld("Homeworld"));
+		Selection selection = LandPurchasing.weplugin.getSelection((Player) sender);
+		if (selection == null || selection.getArea() == 0) {
+			sender.sendMessage("You must make an area selection first!");
+			return;
+		}
+		BlockVector b1 = new BlockVector(selection.getMinimumPoint().getX(), selection.getMinimumPoint().getY(), selection.getMinimumPoint().getZ());
+		BlockVector b2 = new BlockVector(selection.getMaximumPoint().getX(), selection.getMaximumPoint().getY(), selection.getMaximumPoint().getZ());
+		
+		
+		//check the name
+		if (!validName(name)) {
+			sender.sendMessage("Invalid plot name");
+			return;
+		}
+		
+		//also make sure that property name doesn't exist
+		if (rm.getRegion(name) != null) {
+			sender.sendMessage("That lease plot ID is already in use!");
+			return;
+		}
+		
+		//don't need to check balance, cause it's being set up to lease
+		//need to make sure there doesn't exist a region there though!
+		if (!selectionEmpty(rm, b1, b2)) {
+			sender.sendMessage("This region contains another region!");
+			return;
+		}
+		
+		//TODO confirmation period
+		
+		//passed all checks, not create and register region
+		ProtectedRegion region = new ProtectedCuboidRegion(name, b1, b2);
+		
+		//set proper flags
+		LandPurchasing.flagManager.setDefaultFlags(region);
+		
+		//add the new region to WorldGuard
+		rm.addRegion(region);
+		
+		//add player to the owner of the new region
+		DefaultDomain newDomain = new DefaultDomain();
+		newDomain.addPlayer(((Player) sender).getUniqueId());
+		rm.getRegion(name).setOwners(newDomain);
+		
+		//save WorldGuard
+		try {
+			rm.save();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		sender.sendMessage("Leased plot has been successfully registered!");
 		
 	}
 	
