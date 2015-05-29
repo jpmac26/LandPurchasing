@@ -251,6 +251,27 @@ public class LandPurchasing extends JavaPlugin{
 		}
 		
 		/**
+		 * Admin is setting up a leased plot
+		 */
+		if (cmd.getName().equalsIgnoreCase(LandCommand.LEASE.getCommand())) {
+			if (args.length != 1) {
+				sender.sendMessage("Invalid number of arguments.");
+				return false;
+			}
+			landManager.lease(sender, args[0]);
+			return true;
+		}
+		
+		if (cmd.getName().equalsIgnoreCase(LandCommand.LEASELAND.getCommand())) {
+			if (args.length != 1) {
+				sender.sendMessage("Invalid number of arguments.");
+				return false;
+			}
+			landManager.leaseLand(sender, args[0]);
+			return true;
+		}
+		
+		/**
 		 * player wants to sell a plot of land
 		 */
 		if(cmd.getName().equalsIgnoreCase(LandCommand.SELLLAND.getCommand())){

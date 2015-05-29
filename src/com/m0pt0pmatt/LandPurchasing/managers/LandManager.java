@@ -397,6 +397,14 @@ public class LandManager {
 		sender.sendMessage("Congratulations, you now own this region");
 	}
 	
+	public void lease(CommandSender sender, String name) {
+		
+	}
+	
+	public void leaseLand(CommandSender sender, String name) {
+		
+	}
+	
 	/**
 	 * Method for generating the cost of a selection of land
 	 * @param height height of the selection

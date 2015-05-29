@@ -10,6 +10,8 @@ public enum LandCommand {
 	LANDMENU("landmenu"),
 	PRICELAND("priceland"),
 	BUYLAND("buyland"),
+	LEASELAND("leaseland"),
+	LEASE("lease"),
 	SELLLAND("sellland"),
 	LISTLAND("listland"),
 	FLAGLAND("flagland"),
