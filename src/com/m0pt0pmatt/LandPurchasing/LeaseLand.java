@@ -183,7 +183,7 @@ public class LeaseLand extends Land {
 			block.setType(Material.SIGN_POST);
 			Sign sign = (Sign) block.getState();
 			sign.setLine(1, getID());
-			sign.setLine(2, "$" + getCost() / 2);
+			sign.setLine(2, "$" + getCost());
 			
 			org.bukkit.material.Sign sobj = new org.bukkit.material.Sign();
 			sobj.setFacingDirection(facing);
