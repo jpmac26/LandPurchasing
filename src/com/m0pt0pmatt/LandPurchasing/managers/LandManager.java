@@ -46,6 +46,22 @@ public class LandManager {
 		return leasePlots;
 	}
 	
+	/**
+	 * Fetches a set of all lease plots that are available (no tenant)
+	 * @return A set containing all lease plots, or an empty set if there are none
+	 */
+	public Set<LeaseLand> getAvailableLeasePlots() {
+		Set<LeaseLand> avail = new HashSet<LeaseLand>();
+		
+		for (LeaseLand plot : leasePlots) {
+			if (plot.getDueDate() == null) {
+				avail.add(plot);
+			}
+		}
+		
+		return avail;
+	}
+	
 	public void addLeasePlot(LeaseLand plot) {
 		leasePlots.add(plot);
 	}
@@ -206,6 +222,25 @@ public class LandManager {
 			sender.sendMessage(regionName);
 		}
 		
+	}
+	
+	/**
+	 * Tells the command sender all the properties that are available to be leased
+	 * @param sender
+	 */
+	public void listLeaseProperties(CommandSender sender) {
+		
+		Set<LeaseLand> plots = getAvailableLeasePlots();
+		
+		if (plots.isEmpty()) {
+			sender.sendMessage("There are currently no available properties to lease.");
+			return;
+		}
+		
+		sender.sendMessage("The following properties are available to lease:");
+		for (LeaseLand plot : getAvailableLeasePlots()) {
+			sender.sendMessage(plot.getID());
+		}
 	}
 	
 	/**
