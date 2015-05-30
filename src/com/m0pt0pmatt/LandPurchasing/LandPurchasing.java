@@ -1,35 +1,46 @@
 package com.m0pt0pmatt.LandPurchasing;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.UUID;
 
 import net.milkbowl.vault.economy.Economy;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.m0pt0pmatt.LandPurchasing.Handlers.SignHandler;
+import com.m0pt0pmatt.LandPurchasing.Scheduling.Scheduler;
 import com.m0pt0pmatt.LandPurchasing.managers.FlagManager;
 import com.m0pt0pmatt.LandPurchasing.managers.LandManager;
 import com.m0pt0pmatt.LandPurchasing.managers.LandService;
 import com.m0pt0pmatt.LandPurchasing.managers.LandServiceProvider;
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
-import com.sk89q.worldguard.LocalPlayer;
 import com.sk89q.worldguard.bukkit.BukkitPlayer;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
+import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 /**
  * LandPurchasing is a plugin which allows players to purchase custom plots of protected land
  * LandPurchasing uses WorldGuard as its backend.
  * 
- * @author Matthew Broomfield and Lucas Stuyvesant
+ * @author Matthew Broomfield, Lucas Stuyvesant, and Skyler Manzanares
  */
 public class LandPurchasing extends JavaPlugin{
 
@@ -67,6 +78,54 @@ public class LandPurchasing extends JavaPlugin{
 	public static Plugin plugin;
 	
 	private static LandService landService;
+	
+	private static final String configFileName = "config.yml";
+	
+	private static YamlConfiguration config;
+	
+	private static final double version = 1.23;
+	
+	/**
+	 * Load up configuration
+	 */
+	public void onLoad() {
+		File configFile = new File(this.getDataFolder(), configFileName);
+		
+		//make sure our config file is valid
+		if (!configFile.exists() || configFile.isDirectory()) {
+			
+			getLogger().warning(ChatColor.YELLOW + "Invalid Configuration file "
+					+ "for LandPurchasing Plugin!" + ChatColor.RESET);
+			getLogger().warning("Running with Empty Configuration");
+			
+			//create empty default config
+			config = new YamlConfiguration();
+			config.set("version", LandPurchasing.version);
+			
+			//creat empty plot section
+			config.createSection("LeasePlots");
+			
+			return;
+		}
+		
+		//found file, load up config
+		config = new YamlConfiguration();
+		
+		
+		try {
+			config.load(configFile);
+		} catch (Exception e) {
+			getLogger().warning(e.getMessage());
+			
+			getLogger().warning("Running with Empty Configuration");
+			//just set up a default one
+			config = new YamlConfiguration();
+			config.set("version", LandPurchasing.version);
+			
+			//create empty plot section
+			config.createSection("LeasePlots");
+		}
+	}
 		
 	/**
 	 * Hook into other plugins
@@ -91,6 +150,75 @@ public class LandPurchasing extends JavaPlugin{
 		landService = new LandServiceProvider(flagManager, landManager);
 		Bukkit.getServicesManager().register(LandService.class, landService, this, ServicePriority.Normal);
 		
+		//load up config
+		//TODO make version info useful
+		getLogger().info("Ignoring version information in config...");
+		ConfigurationSection plotList = config.getConfigurationSection("LeasePlots");
+		if (plotList == null) {
+			getLogger().warning("Error encountered when reading from config file: Null LeasePlots section!");
+			return;
+		}
+		
+		if (plotList.getKeys(false).isEmpty()) {
+			//no leased plots
+			getLogger().info("Found no leased plot information to load!");
+			return;
+		}
+		
+		getLogger().info("Loading leased plot information");
+		int count = 0;
+		for (String plotName : plotList.getKeys(false)) {
+			//go through to each plot and load it up
+			if (plotName.trim().isEmpty()) {
+				getLogger().warning("Found funky key in LeasePlot section...");
+				continue;
+			}
+			
+			//create a LeaseLand object from the configuration section
+			LeaseLand plot = LeaseLand.fromConfig(plotName, plotList.getConfigurationSection(plotName));
+			
+			//check and make sure this region doesn't intersect any others
+			//TODO add check here? What about spawn region?
+			
+			landManager.addLeasePlot(plot);
+			count ++;
+		}
+		getLogger().info("Loaded " + count + " plots!");
+		
+		getLogger().info("Starting scheduler");
+		Scheduler.getScheduler();
+		SignHandler.getHandler();
+	}
+	
+	@Override
+	public void onDisable() {
+		
+		//remove all leased plot locations, so we can recreate them on next enable and not
+		//create overlapping regions!
+		
+		RegionManager rm = wgplugin.getRegionManager(Bukkit.getWorld("Homeworld"));
+		
+		//save out config!
+		getLogger().info("Saving plot information...");
+		YamlConfiguration newConfig = new YamlConfiguration();
+		newConfig.set("version", config.get("version"));
+		
+		newConfig.createSection("LeasePlots");
+		for (LeaseLand land : landManager.getLeasePlots()) {
+			newConfig.createSection("LeasePlots." + land.land.getId(), land.toConfig().getValues(true));
+		}
+		
+		try {
+			newConfig.save(new File(getDataFolder(), configFileName));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		getLogger().info("Removing leased plots...");
+		for (LeaseLand land : landManager.getLeasePlots()) {
+			rm.removeRegion(land.land.getId());
+		}
 	}
 	
 	/**
@@ -198,6 +326,39 @@ public class LandPurchasing extends JavaPlugin{
 		}
 		
 		/**
+		 * Admin is setting up a leased plot
+		 */
+		if (cmd.getName().equalsIgnoreCase(LandCommand.LEASE.getCommand())) {
+			if (args.length != 1) {
+				sender.sendMessage("Invalid number of arguments.");
+				return false;
+			}
+			landManager.lease(sender, args[0]);
+			return true;
+		}
+		
+		/**
+		 * Player attempting to renew a lease
+		 */
+		if (cmd.getName().equalsIgnoreCase(LandCommand.RENEWLEASE.getCommand())) {
+			if (args.length != 1) {
+				sender.sendMessage("Invalid number of arguments.");
+				return false;
+			}
+			landManager.renewLease(sender, args[0]);
+			return true;
+		}
+		
+		if (cmd.getName().equalsIgnoreCase(LandCommand.LEASELAND.getCommand())) {
+			if (args.length != 1) {
+				sender.sendMessage("Invalid number of arguments.");
+				return false;
+			}
+			landManager.leaseLand(sender, args[0]);
+			return true;
+		}
+		
+		/**
 		 * player wants to sell a plot of land
 		 */
 		if(cmd.getName().equalsIgnoreCase(LandCommand.SELLLAND.getCommand())){
@@ -221,6 +382,83 @@ public class LandPurchasing extends JavaPlugin{
 			}
 			else{
 				landManager.listRegions(sender);
+			}
+			return true;
+		}
+		
+		/**
+		 * Player would like the local listings
+		 */
+		if (cmd.getName().equalsIgnoreCase(LandCommand.LISTINGS.getCommand())) {
+			if (args.length != 0){
+				sender.sendMessage("Wrong number of arguments.");
+				return false;
+			}
+			if (sender instanceof Player) {
+				
+				if (((Player) sender).getInventory().firstEmpty() == -1) {
+					sender.sendMessage("There is no room in your inventory!");
+					return true;
+				}
+				
+				ItemStack book = new ItemStack(Material.WRITTEN_BOOK);
+				BookMeta meta = (BookMeta) book.getItemMeta();
+				
+				meta.setDisplayName("Local Listings");
+				meta.setTitle("Lease Listings");
+				meta.setAuthor("");
+				
+				meta.addPage("Listed herein are all available plots to lease.\n" +  
+						"Each plot lists its address and the price.\n\n" + 
+						"All leases are offered in\n" +  
+						ChatColor.DARK_RED + "2 week" + ChatColor.BLACK + "\nperiods.\n\n"
+								+ (landManager.getAvailableLeasePlots().isEmpty() ? 
+								ChatColor.DARK_RED + "There are no available plots to lease!" + ChatColor.BLACK : 
+								"There are " + ChatColor.DARK_GREEN + 
+										landManager.getAvailableLeasePlots().size() + 
+								ChatColor.BLACK + " plots available to lease!"));
+				
+				if (!landManager.getAvailableLeasePlots().isEmpty()) {
+					for (LeaseLand plot : landManager.getAvailableLeasePlots()) {
+						Location b = plot.getSignLocation();
+						meta.addPage(ChatColor.DARK_BLUE + plot.getID() + ChatColor.BLACK + "\n" +
+								ChatColor.DARK_GREEN + "$" + plot.getCost() + ChatColor.BLACK + "\n" +
+								"-----\n\n" + 
+								"Located around\n(" + 
+								b.getBlockX() + ", " + b.getBlockY() + ", " + b.getBlockZ() + 
+								")"
+								);
+					}
+				}
+				
+				book.setItemMeta(meta);
+				
+				Player player = (Player) sender;
+				
+				if (player.getInventory().contains(Material.WRITTEN_BOOK)) {
+					player.getInventory().setItem(player.getInventory().first(Material.WRITTEN_BOOK), book);
+					player.sendMessage("Your listings book has been updated!");
+				} else {				
+					player.getInventory().addItem(book);
+					player.sendMessage("A book containing the listings has been added to your inventory.");
+				}
+				
+			} else {
+				sender.sendMessage("Only players can use this command!");
+			}
+			return true;
+		}
+		
+		/**
+		 * player wants to see what plots are available to lease
+		 */
+		if(cmd.getName().equalsIgnoreCase(LandCommand.LISTLEASE.getCommand())){
+			if (args.length != 0){
+				sender.sendMessage("Wrong number of arguments.");
+				return false;
+			}
+			else{
+				landManager.listLeaseProperties(sender);
 			}
 			return true;
 		}
@@ -300,6 +538,43 @@ public class LandPurchasing extends JavaPlugin{
 			}
 			//theoretically, there will only be one region. we're just going to grab the first under the first
 			region = (ProtectedRegion) regions.getRegions().toArray()[0];
+			
+			//two modes: it's a leased property (no UUID header) or it's a player's property
+			//if it's a leased property, display different stats and don't substring the name
+			if (LandPurchasing.landManager.getPlot(region.getId()) != null) {
+				//it's a leased plot!
+				LeaseLand plot = landManager.getPlot(region.getId());
+				
+				player.sendMessage("Plot name: " + region.getId());
+								
+				if (region.isOwner(new BukkitPlayer(wgplugin, player))) {
+					player.sendMessage("You are currently leasing this property.");
+					player.sendMessage("Your lease expires on " + plot.getDueDate());
+					player.sendMessage("    To renew your lease, use the /renewlease command");
+					
+					player.sendMessage("Members: ");
+					for (String name : region.getMembers().getPlayers()) {
+						player.sendMessage(Bukkit.getOfflinePlayer(UUID.fromString(name.substring(5))).getName());
+					}
+					BlockVector min, max;
+					min = region.getMinimumPoint();
+					max = region.getMaximumPoint();
+					player.sendMessage("This region extends from (" + min.getBlockX() + ", " + min.getBlockY() + ", " + min.getBlockZ() + ") to (" + max.getBlockX() + ", " + max.getBlockY() + ", " + max.getBlockZ() + ")");
+				} else {
+					if (plot.getDueDate() == null) {
+						player.sendMessage("This plot is available to lease!");
+						return true;
+					}
+					
+					//someone owns it
+					//tell them who it is and when their lease expires?
+					player.sendMessage("This land is being leased by by " + Bukkit.getOfflinePlayer(UUID.fromString(region.getOwners().toPlayersString().substring(5))).getName());
+					player.sendMessage("Their lease expires on " + plot.getDueDate());
+					
+				}
+				
+				return true;
+			}
 			
 			if (region.isOwner(new BukkitPlayer(wgplugin, player))) {
 				player.sendMessage("You own this region.");
