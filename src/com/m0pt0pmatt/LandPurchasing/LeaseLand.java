@@ -214,9 +214,6 @@ public class LeaseLand extends Land {
         int i = (int)((y+8) / 22.5);
         i += 4;
         i %= 16;
-        
-        System.out.println("Facing: " + i);
-        System.out.println("yaw: " + loc.getYaw());
      
         if(i == 0){facing = BlockFace.WEST;}
         else if(i == 1){facing = BlockFace.WEST_NORTH_WEST;}
