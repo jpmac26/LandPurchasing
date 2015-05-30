@@ -25,10 +25,19 @@ public class AreaView extends BukkitRunnable {
 	private List<Block> blocks;
 	
 	public AreaView(ProtectedCuboidRegion region) {
+		
 		BlockVector min, max;
 		min = region.getMinimumPoint();
 		max = region.getMaximumPoint();
 		World world = Bukkit.getWorld("Homeworld"); //TODO make dynamic?
+		
+		//do some light math to set up an array for our blocks
+		int w,h,l;
+		w = max.getBlockX() - min.getBlockX();
+		h = max.getBlockY() - min.getBlockY();
+		l = max.getBlockZ() - min.getBlockZ();
+		
+		blocks = new ArrayList<Block>((2*w*l) + (2*w*h) + (2*l*h));
 		
 		//do two edges that have the whole face first
 		for (int j = min.getBlockY(); j <= max.getBlockY(); j++)
@@ -57,7 +66,7 @@ public class AreaView extends BukkitRunnable {
 		//got all our blocks, not setup and run later
 		setup();
 		
-		Bukkit.getScheduler().runTaskLater(LandPurchasing.plugin, this, 1000 * 15);
+		Bukkit.getScheduler().runTaskLater(LandPurchasing.plugin, this, 20 * 5);
 	}
 	
 	/**
@@ -71,7 +80,7 @@ public class AreaView extends BukkitRunnable {
 		setup();
 		
 		//break down in 15 seconds
-		Bukkit.getScheduler().runTaskLater(LandPurchasing.plugin, this, 1000 * 15);
+		Bukkit.getScheduler().runTaskLater(LandPurchasing.plugin, this, 20 * 5);
 	}
 	
 	/**

@@ -15,6 +15,7 @@ import org.bukkit.entity.Player;
 
 import com.m0pt0pmatt.LandPurchasing.LandPurchasing;
 import com.m0pt0pmatt.LandPurchasing.LeaseLand;
+import com.m0pt0pmatt.LandPurchasing.Effects.AreaView;
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.bukkit.selections.Selection;
@@ -535,6 +536,8 @@ public class LandManager {
 		
 		sender.sendMessage("Leased plot has been successfully registered with sign location"
 				+ " where you're standing!");
+		
+		new AreaView(region);
 		
 	}
 	
