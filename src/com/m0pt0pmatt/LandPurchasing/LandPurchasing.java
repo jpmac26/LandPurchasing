@@ -405,15 +405,21 @@ public class LandPurchasing extends JavaPlugin{
 				meta.setTitle("Lease Listings");
 				meta.setAuthor("");
 				
-				meta.addPage("Listed herein are all available plots to lease.", 
-						"Each plot lists its address and the price.", "", 
-						"All leases are offered in ", 
-						ChatColor.DARK_RED + "2 week" + ChatColor.RESET + " periods.");
+				meta.addPage("Listed herein are all available plots to lease.\n" +  
+						"Each plot lists its address and the price.\n\n" + 
+						"All leases are offered in\n" +  
+						ChatColor.DARK_RED + "2 week" + ChatColor.BLACK + "\nperiods.");
 				
 				if (!landManager.getAvailableLeasePlots().isEmpty()) {
 					for (LeaseLand plot : landManager.getAvailableLeasePlots()) {
-						meta.addPage(plot.getID(), 
-								"$" + plot.getCost());
+						BlockVector b = plot.getRegion().getMinimumPoint();
+						meta.addPage(ChatColor.DARK_BLUE + plot.getID() + ChatColor.BLACK + "\n" +
+								ChatColor.DARK_GREEN + "$" + plot.getCost() + ChatColor.BLACK + "\n" +
+								"-----\n\n" + 
+								"Located around\n(" + 
+								b.getBlockX() + ", " + b.getBlockY() + ", " + b.getBlockZ() + 
+								")"
+								);
 					}
 				}
 				
