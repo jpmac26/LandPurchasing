@@ -109,9 +109,9 @@ public class LeaseLand extends Land {
 		config.set("Block1.Y", this.land.getMinimumPoint().getBlockY());
 		config.set("Block1.Z", this.land.getMinimumPoint().getBlockZ());
 
-		config.set("Block2.X", this.land.getMinimumPoint().getBlockX());
-		config.set("Block2.Y", this.land.getMinimumPoint().getBlockY());
-		config.set("Block2.Z", this.land.getMinimumPoint().getBlockZ());
+		config.set("Block2.X", this.land.getMaximumPoint().getBlockX());
+		config.set("Block2.Y", this.land.getMaximumPoint().getBlockY());
+		config.set("Block2.Z", this.land.getMaximumPoint().getBlockZ());
 		
 		if (dueDate != null) {
 			config.set("DueDate.Day", dueDate.getDay());
