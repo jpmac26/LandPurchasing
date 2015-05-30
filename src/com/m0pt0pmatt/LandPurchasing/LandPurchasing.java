@@ -440,6 +440,43 @@ public class LandPurchasing extends JavaPlugin{
 			//theoretically, there will only be one region. we're just going to grab the first under the first
 			region = (ProtectedRegion) regions.getRegions().toArray()[0];
 			
+			//two modes: it's a leased property (no UUID header) or it's a player's property
+			//if it's a leased property, display different stats and don't substring the name
+			if (this.landManager.getPlot(region.getId()) != null) {
+				//it's a leased plot!
+				LeaseLand plot = landManager.getPlot(region.getId());
+				
+				player.sendMessage("Plot name: " + region.getId());
+								
+				if (region.isOwner(new BukkitPlayer(wgplugin, player))) {
+					player.sendMessage("You are currently leasing this property.");
+					player.sendMessage("Your lease expires on " + plot.getDueDate());
+					player.sendMessage("    To renew your lease, use the /leaseland command");
+					
+					player.sendMessage("Members: ");
+					for (String name : region.getMembers().getPlayers()) {
+						player.sendMessage(Bukkit.getOfflinePlayer(UUID.fromString(name.substring(5))).getName());
+					}
+					BlockVector min, max;
+					min = region.getMinimumPoint();
+					max = region.getMaximumPoint();
+					player.sendMessage("This region extends from (" + min.getBlockX() + ", " + min.getBlockY() + ", " + min.getBlockZ() + ") to (" + max.getBlockX() + ", " + max.getBlockY() + ", " + max.getBlockZ() + ")");
+				} else {
+					if (plot.getDueDate() == null) {
+						player.sendMessage("This plot is available to lease!");
+						return true;
+					}
+					
+					//someone owns it
+					//tell them who it is and when their lease expires?
+					player.sendMessage("This land is being leased by by " + Bukkit.getOfflinePlayer(UUID.fromString(region.getOwners().toPlayersString().substring(5))).getName());
+					player.sendMessage("Their lease expires on " + plot.getDueDate());
+					
+				}
+				
+				return true;
+			}
+			
 			if (region.isOwner(new BukkitPlayer(wgplugin, player))) {
 				player.sendMessage("You own this region.");
 				player.sendMessage("Region name: " + region.getId().substring( player.getUniqueId().toString().length() + 2     , region.getId().length()));

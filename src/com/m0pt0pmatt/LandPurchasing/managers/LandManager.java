@@ -483,11 +483,7 @@ public class LandManager {
 		//add the new region to WorldGuard
 		rm.addRegion(region);
 		
-		//add player to the owner of the new region
-		DefaultDomain newDomain = new DefaultDomain();
-		newDomain.addPlayer(((Player) sender).getUniqueId());
-		rm.getRegion(name).setOwners(newDomain);
-		
+				
 		//save WorldGuard
 		try {
 			rm.save();
@@ -663,7 +659,7 @@ public class LandManager {
 	 * @param id
 	 * @return
 	 */
-	private LeaseLand getPlot(String id) {
+	public LeaseLand getPlot(String id) {
 		for (LeaseLand plot : leasePlots) {
 			if (plot.getID().equals(id)) {
 				return plot;
