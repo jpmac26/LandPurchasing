@@ -6,8 +6,16 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.block.Sign;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+
+
+
+
 
 
 
@@ -26,6 +34,8 @@ public class LeaseLand extends Land {
 	private Date dueDate;
 	
 	private Location signLoc;
+	
+	private BlockFace facing;
 	
 	/**
 	 * Creates a new LeaseLand object from the passed configuration section<br />
@@ -74,6 +84,7 @@ public class LeaseLand extends Land {
 		
 
 		LeaseLand lease = new LeaseLand(signLoc, region);
+		lease.facing = BlockFace.valueOf(section.getString("Sign.Face"));
 		
 //		if (section.contains("Owner") && section.contains("DueDate") && section.contains("DueDate.Day") && section.contains("DueDate.Month") && section.contains("DueDate.Year")) {
 		if (section.contains("Owner") && section.contains("DueDate")) {
@@ -86,6 +97,8 @@ public class LeaseLand extends Land {
 			DefaultDomain dom = new DefaultDomain();
 			dom.addPlayer(UUID.fromString(section.getString("Owner")));
 			lease.land.setOwners(dom);
+			
+			lease.updateSign();
 		}
 		//else do nothing, as assumed no date info on creation
 		
@@ -96,7 +109,9 @@ public class LeaseLand extends Land {
 	public LeaseLand(Location signLocation, ProtectedCuboidRegion region) {
 		super(region);
 		dueDate = null;
-		this.signLoc = signLocation;
+		setSignLocation(signLocation);
+		
+		updateSign();
 	}
 	
 	public Date getDueDate() {
@@ -105,6 +120,9 @@ public class LeaseLand extends Land {
 	
 	public void setDueDate(Date date) {
 		dueDate = date;
+		
+		//also put up or take down sign!
+		updateSign();
 	}
 	
 	public Location getSignLocation() {
@@ -136,6 +154,7 @@ public class LeaseLand extends Land {
 		config.set("Sign.X", signLoc.getBlockX());
 		config.set("Sign.Y", signLoc.getBlockY());
 		config.set("Sign.Z", signLoc.getBlockZ());
+		config.set("Sign.Face", facing.name());
 		
 		if (dueDate != null) {
 			Calendar cal = Calendar.getInstance();
@@ -151,6 +170,77 @@ public class LeaseLand extends Land {
 			config.set("Owner", land.getOwners().getUniqueIds().iterator().next().toString());
 		}
 		return config;
+	}
+	
+	/**
+	 * Checks current status and puts up or takes down the lease sign to reflect it
+	 */
+	private void updateSign() {
+		if (dueDate == null) {
+			signLoc.getBlock().setType(Material.GOLD_BLOCK);
+			Location tmpLoc = signLoc.clone().add(0.0, 1.0, 0.0);
+			Block block = tmpLoc.getBlock();
+			block.setType(Material.SIGN_POST);
+			Sign sign = (Sign) block.getState();
+			sign.setLine(1, getID());
+			sign.setLine(2, "$" + getCost() / 2);
+			
+			org.bukkit.material.Sign sobj = new org.bukkit.material.Sign();
+			sobj.setFacingDirection(facing);
+			
+			sign.setData(sobj);
+			
+			sign.update();
+		} else {
+			Location tmpLoc = signLoc.clone().add(0.0, 1.0, 0.0);
+			tmpLoc.getBlock().setType(Material.AIR);
+			signLoc.getBlock().setType(Material.AIR);
+			
+		}
+	}
+	
+	public void setSignLocation(Location loc) {
+		
+		signLoc = loc;
+		
+		//nasty copied code
+		
+		float y = loc.getYaw();
+	     
+        if( y < 0 ){y += 360;}
+     
+        y %= 360;
+     
+        int i = (int)((y+8) / 22.5);
+        i += 4;
+        i %= 16;
+        
+        System.out.println("Facing: " + i);
+        System.out.println("yaw: " + loc.getYaw());
+     
+        if(i == 0){facing = BlockFace.WEST;}
+        else if(i == 1){facing = BlockFace.WEST_NORTH_WEST;}
+        else if(i == 2){facing = BlockFace.NORTH_WEST;}
+        else if(i == 3){facing = BlockFace.NORTH_NORTH_WEST;}
+        else if(i == 4){facing = BlockFace.NORTH;}
+        else if(i == 5){facing = BlockFace.NORTH_NORTH_EAST;}
+        else if(i == 6){facing = BlockFace.NORTH_EAST;}
+        else if(i == 7){facing = BlockFace.EAST_NORTH_EAST;}
+        else if(i == 8){facing = BlockFace.EAST;}
+        else if(i == 9){facing = BlockFace.EAST_SOUTH_EAST;}
+        else if(i == 10){facing = BlockFace.SOUTH_EAST;}
+        else if(i == 11){facing = BlockFace.SOUTH_SOUTH_EAST;}
+        else if(i == 12){facing = BlockFace.SOUTH;}
+        else if(i == 13){facing = BlockFace.SOUTH_SOUTH_WEST;}
+        else if(i == 14){facing = BlockFace.SOUTH_WEST;}
+        else if(i == 15){facing = BlockFace.WEST_SOUTH_WEST;}
+        else {facing = BlockFace.WEST;}
+		
+	}
+	
+	@Override
+	public int getCost() {
+		return super.getCost() / 2;
 	}
 	
 	@Override

@@ -534,7 +534,7 @@ public class LandManager {
 		leasePlots.add(new LeaseLand(((Player) sender).getLocation(), region));
 		
 		sender.sendMessage("Leased plot has been successfully registered with sign location"
-				+ "where you're standing!");
+				+ " where you're standing!");
 		
 	}
 	
@@ -593,7 +593,7 @@ public class LandManager {
 			return;
 		}
 		
-		int cost = (plot.getCost() / 2);
+		int cost = (plot.getCost());
 		if (money < cost) {
 			sender.sendMessage("You do not have sufficient funds to lease this property!");
 			return;
@@ -664,7 +664,7 @@ public class LandManager {
 		}
 		
 		LeaseLand plot = getPlot(name);
-		cost = plot.getCost() / 2;
+		cost = plot.getCost();
 		
 		if (plot.getDueDate() == null || !plot.getRegion().getOwners().contains(new BukkitPlayer(LandPurchasing.wgplugin, (Player) sender))) {
 			sender.sendMessage("You are not leasing that plot!");
