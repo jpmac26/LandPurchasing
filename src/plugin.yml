@@ -44,5 +44,8 @@ commands:
         usage: /leaseland [plot_name]
     lease:
         description: Sets the designated plot of land for leasing
-        usage: /leaseland [plot_name]
+        usage: /lease [plot_name]
         permission: op
+    renewlease:
+        description: Renews a current lease for an additional period
+        usage: /renewlease [plot_name]

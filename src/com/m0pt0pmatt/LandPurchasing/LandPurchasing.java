@@ -327,6 +327,18 @@ public class LandPurchasing extends JavaPlugin{
 			return true;
 		}
 		
+		/**
+		 * Player attempting to renew a lease
+		 */
+		if (cmd.getName().equalsIgnoreCase(LandCommand.RENEWLEASE.getCommand())) {
+			if (args.length != 1) {
+				sender.sendMessage("Invalid number of arguments.");
+				return false;
+			}
+			landManager.renewLease(sender, args[0]);
+			return true;
+		}
+		
 		if (cmd.getName().equalsIgnoreCase(LandCommand.LEASELAND.getCommand())) {
 			if (args.length != 1) {
 				sender.sendMessage("Invalid number of arguments.");

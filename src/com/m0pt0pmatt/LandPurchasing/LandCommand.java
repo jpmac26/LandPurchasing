@@ -12,6 +12,7 @@ public enum LandCommand {
 	BUYLAND("buyland"),
 	LEASELAND("leaseland"),
 	LEASE("lease"),
+	RENEWLEASE("renewlease"),
 	SELLLAND("sellland"),
 	LISTLAND("listland"),
 	FLAGLAND("flagland"),
