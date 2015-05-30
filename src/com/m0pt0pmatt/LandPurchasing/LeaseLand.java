@@ -65,7 +65,7 @@ public class LeaseLand extends Land {
 
 		LeaseLand lease = new LeaseLand(region);
 		
-		if (section.contains("Owner") && section.contains("Date") && section.contains("Date.Day") && section.contains("Date.Month") && section.contains("Date.Year")) {
+		if (section.contains("Owner") && section.contains("DueDate") && section.contains("DueDate.Day") && section.contains("DueDate.Month") && section.contains("DueDate.Year")) {
 			//due date information!
 			Calendar calendar = Calendar.getInstance();
 			calendar.clear();
