@@ -433,7 +433,13 @@ public class LandPurchasing extends JavaPlugin{
 				
 				Player player = (Player) sender;
 				
-				player.getInventory().addItem(book);
+				if (player.getInventory().contains(Material.WRITTEN_BOOK)) {
+					player.getInventory().setItem(player.getInventory().first(Material.WRITTEN_BOOK), book);
+					player.sendMessage("Your listings book has been updated!");
+				} else {				
+					player.getInventory().addItem(book);
+					player.sendMessage("A book containing the listings has been added to your inventory.");
+				}
 				
 			} else {
 				sender.sendMessage("Only players can use this command!");
