@@ -2,13 +2,16 @@ package com.m0pt0pmatt.LandPurchasing;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
+
 //import com.m0pt0pmatt.LandPurchasing.Scheduling.Date;
 import com.sk89q.worldedit.BlockVector;
+import com.sk89q.worldguard.domains.DefaultDomain;
 import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
 
 /**
@@ -36,6 +39,7 @@ public class LeaseLand extends Land {
 	 * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Day: 14<br />
 	 * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Month: 09<br />
 	 * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Year: 2014<br />
+	 * &nbsp;&nbsp;&nbsp;&nbsp;Owner: 3515-gaey3-61-61-ah-36-ahh<br />
 	 * </p>
 	 * @param section The section to load from
 	 * @return The resultant LeaseLand object, or <i>null</i> if there was an error
@@ -61,7 +65,7 @@ public class LeaseLand extends Land {
 
 		LeaseLand lease = new LeaseLand(region);
 		
-		if (section.contains("Date") && section.contains("Date.Day") && section.contains("Date.Month") && section.contains("Date.Year")) {
+		if (section.contains("Owner") && section.contains("Date") && section.contains("Date.Day") && section.contains("Date.Month") && section.contains("Date.Year")) {
 			//due date information!
 			Calendar calendar = Calendar.getInstance();
 			calendar.clear();
@@ -71,6 +75,10 @@ public class LeaseLand extends Land {
 					section.getInt("Date.Day")
 					);
 			lease.dueDate = calendar.getTime();
+			
+			DefaultDomain dom = new DefaultDomain();
+			dom.addPlayer(UUID.fromString(section.getString("Owner")));
+			lease.land.setOwners(dom);
 		}
 		//else do nothing, as assumed no date info on creation
 		
@@ -117,6 +125,9 @@ public class LeaseLand extends Land {
 			config.set("DueDate.Day", dueDate.getDay());
 			config.set("DueDate.Month", dueDate.getMonth());
 			config.set("DueDate.Year", dueDate.getYear());
+			
+			//set owner as just first uuid
+			config.set("Owner", land.getOwners().getUniqueIds().iterator().next().toString());
 		}
 		return config;
 	}
