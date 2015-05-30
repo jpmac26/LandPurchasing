@@ -505,12 +505,14 @@ public class LandManager {
 		
 		
 		
-		//don't need to check balance, cause it's being set up to lease
-		//need to make sure there doesn't exist a region there though!
-		if (!selectionEmpty(rm, b1, b2)) {
-			sender.sendMessage("This region contains another region!");
-			return;
-		}
+		
+//		//don't need to check balance, cause it's being set up to lease
+//		//need to make sure there doesn't exist a region there though!
+//		if (!selectionEmpty(rm, b1, b2)) {
+//			sender.sendMessage("This region contains another region!");
+//			return;
+//		}
+		//--removed, cause plots go in spawn
 		
 		//TODO confirmation period
 		
