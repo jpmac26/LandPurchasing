@@ -16,7 +16,7 @@ public class Land {
 	ProtectedCuboidRegion land;
 	ArrayList<BlockVector2D> chunks;
 	String id;
-	double costPerBlock;
+	double costPerBlock = 5;
 
 	public Land(){}
 	
@@ -25,10 +25,6 @@ public class Land {
 		id = land.getId();
 		chunks = new ArrayList<BlockVector2D>();
 		addChunks(region);
-		int xDim = region.getMaximumPoint().getBlockX() - region.getMinimumPoint().getBlockX() + 1;
-		int yDim = region.getMaximumPoint().getBlockY() - region.getMinimumPoint().getBlockY() + 1;
-		int zDim = region.getMaximumPoint().getBlockZ() - region.getMinimumPoint().getBlockZ() + 1;
-		costPerBlock = getCost(xDim, yDim, zDim) / (xDim * yDim * zDim);
 	}
 	
 	public String getID() {
@@ -86,14 +82,14 @@ public class Land {
 	}
 
 	/**
-	 * Method for generating the cost of a selection of land
-	 * @param height height of the selection
-	 * @param length length of the selection
-	 * @param width width of the selection
+	 * Method for generating the cost of a selection of this piece of land
 	 * @return the cost of the given dimentions
 	 */
-	private double getCost(double height, double length, double width){
-		return (5 + height)*(length * width);
+	public double getCost(){
+		int length = land.getMaximumPoint().getBlockX() - land.getMinimumPoint().getBlockX() + 1;
+		int height = land.getMaximumPoint().getBlockY() - land.getMinimumPoint().getBlockY() + 1;
+		int width = land.getMaximumPoint().getBlockZ() - land.getMinimumPoint().getBlockZ() + 1;
+		return (costPerBlock + height)*(length * width);
 	}
 
 }
