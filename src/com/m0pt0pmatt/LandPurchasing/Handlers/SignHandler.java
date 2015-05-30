@@ -41,8 +41,8 @@ public class SignHandler implements Listener {
 			Location clickedLoc = e.getClickedBlock().getLocation().add(0, -1, 0);
 			
 			for (LeaseLand plot : LandPurchasing.landManager.getLeasePlots()) {
-				if (plot.getSignLocation().equals(clickedLoc)) {
-					
+				//if (plot.getSignLocation()..equals(clickedLoc)) {
+				if (plot.getSignLocation().distance(clickedLoc) <= 0.1)	{
 					//found it!
 					//send user info, and display the outer shell with glass
 					new AreaView(plot.getRegion());

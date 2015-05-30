@@ -206,7 +206,7 @@ public class LeaseLand extends Land {
 	
 	public void setSignLocation(Location loc) {
 		
-		signLoc = loc;
+		signLoc = loc.getBlock().getLocation();
 		
 		//nasty copied code
 		
