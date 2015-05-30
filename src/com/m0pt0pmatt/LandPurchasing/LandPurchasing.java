@@ -442,7 +442,7 @@ public class LandPurchasing extends JavaPlugin{
 			
 			//two modes: it's a leased property (no UUID header) or it's a player's property
 			//if it's a leased property, display different stats and don't substring the name
-			if (this.landManager.getPlot(region.getId()) != null) {
+			if (LandPurchasing.landManager.getPlot(region.getId()) != null) {
 				//it's a leased plot!
 				LeaseLand plot = landManager.getPlot(region.getId());
 				

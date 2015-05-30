@@ -498,6 +498,11 @@ public class LandManager {
 		
 	}
 	
+	/**
+	 * Player is attempting to lease a plot of land
+	 * @param sender
+	 * @param name
+	 */
 	public void leaseLand(CommandSender sender, String name) {
 		
 		//make sure its a player
@@ -570,6 +575,88 @@ public class LandManager {
 		//congratulate new lease owner
 		sender.sendMessage("Congratulations! You are now leasing this property!");
 		sender.sendMessage("Your lease expires on " + cal.getTime());
+		
+	}
+	
+	/**
+	 * Renews the provided plot
+	 * @param sender
+	 * @param plot
+	 */
+	public void renewLease(CommandSender sender, String name) {
+		
+		//make sure its a player
+		if (!(sender instanceof Player)){
+			sender.sendMessage("Sorry, only players can execute this command");
+			return;
+		}
+		
+		//make sure the player is in the right world
+		if (!(Bukkit.getWorld("HomeWorld").getPlayers().contains(sender))){
+			sender.sendMessage("Sorry, you have to be on the HomeWorld to buy land");
+			return;
+		}
+		
+		//make sure there is an economy
+		if (LandPurchasing.economy == null){
+			if (!LandPurchasing.setupEconomy()){
+				sender.sendMessage("Error. No economy plugin loaded.");
+				return;
+			}
+		}
+		
+		
+		//get the players economy balance
+		double money = LandPurchasing.economy.getBalance((OfflinePlayer) sender);
+		double cost;
+		
+		//get the region manager for the homeworld
+		RegionManager rm = LandPurchasing.wgplugin.getRegionManager(Bukkit.getWorld("HomeWorld"));
+		if (rm == null){
+			sender.sendMessage("No region manager for the homeworld");
+			return;
+		}
+		
+		ProtectedRegion region = rm.getRegion(name);
+		if (region == null) {
+			sender.sendMessage("Invalid plot name!");
+			return;
+		}
+		
+		LeaseLand plot = getPlot(name);
+		cost = plot.getCost() / 2;
+		
+		if (plot.getDueDate() == null || !plot.getRegion().getOwners().contains(new BukkitPlayer(LandPurchasing.wgplugin, (Player) sender))) {
+			sender.sendMessage("You are not leasing that plot!");
+			return;
+		}
+		
+		if (money < cost) {
+			sender.sendMessage("You do not have enough money to renew your lease, which costs " + cost);
+			return;
+		}
+		
+		Calendar cal = Calendar.getInstance();
+		cal.clear();
+		cal.setTime(new Date());
+		cal.add(Calendar.DATE, 14);
+		if (cal.getTime().compareTo(plot.getDueDate()) >= 0) {
+			//this is: "is 14 days from now the same or LATER than the due date?
+			//e.g. is the due date already more than 14 days away (can't renew)
+			sender.sendMessage("You cannot renew your lease, as your current due-date is still"
+					+ " over 2 weeks away!");
+			return;
+		}
+		
+		cal.clear();
+		cal.setTime(plot.getDueDate());
+		cal.add(Calendar.DATE, 14);
+		plot.setDueDate(cal.getTime());
+		
+		LandPurchasing.economy.withdrawPlayer((Player) sender, cost);
+		
+		sender.sendMessage("You have renewed your lease for $" + cost);
+		sender.sendMessage("Your new due-date is " + cal.getTime());
 		
 	}
 	

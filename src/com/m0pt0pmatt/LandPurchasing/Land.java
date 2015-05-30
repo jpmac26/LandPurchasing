@@ -31,6 +31,10 @@ public class Land {
 		return this.id;
 	}
 	
+	public ProtectedCuboidRegion getRegion() {
+		return land;
+	}
+	
 	/**
 	 * Adds the chunks spanned by the region to the list
 	 * @param region
