@@ -22,6 +22,7 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.m0pt0pmatt.LandPurchasing.Handlers.SignHandler;
 import com.m0pt0pmatt.LandPurchasing.Scheduling.Scheduler;
 import com.m0pt0pmatt.LandPurchasing.managers.FlagManager;
 import com.m0pt0pmatt.LandPurchasing.managers.LandManager;
@@ -186,6 +187,7 @@ public class LandPurchasing extends JavaPlugin{
 		
 		getLogger().info("Starting scheduler");
 		Scheduler.getScheduler();
+		SignHandler.getHandler();
 	}
 	
 	@Override
