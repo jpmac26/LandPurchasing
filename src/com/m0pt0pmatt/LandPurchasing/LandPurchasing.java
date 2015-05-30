@@ -417,6 +417,8 @@ public class LandPurchasing extends JavaPlugin{
 					}
 				}
 				
+				book.setItemMeta(meta);
+				
 				Player player = (Player) sender;
 				
 				player.getInventory().addItem(book);
