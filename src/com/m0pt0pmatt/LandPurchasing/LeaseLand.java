@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -12,6 +13,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+
 
 
 
@@ -189,8 +191,9 @@ public class LeaseLand extends Land {
 			Block block = tmpLoc.getBlock();
 			block.setType(Material.SIGN_POST);
 			Sign sign = (Sign) block.getState();
-			sign.setLine(1, getID());
-			sign.setLine(2, "$" + getCost());
+			sign.setLine(0, getID());
+			sign.setLine(1, ChatColor.DARK_GREEN + "$" + getCost() + ChatColor.BLACK);
+			sign.setLine(3, ChatColor.DARK_RED + "<RClick Me>" + ChatColor.BLACK);
 			
 			org.bukkit.material.Sign sobj = new org.bukkit.material.Sign();
 			sobj.setFacingDirection(facing);
