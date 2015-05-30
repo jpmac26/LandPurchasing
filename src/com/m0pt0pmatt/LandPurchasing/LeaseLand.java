@@ -35,10 +35,10 @@ public class LeaseLand extends Land {
 	 * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;X: 312<br />
 	 * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Y: 70<br />
 	 * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Z: -700<br />
-	 * &nbsp;&nbsp;&nbsp;&nbsp;Date:<br />
-	 * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Day: 14<br />
-	 * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Month: 09<br />
-	 * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Year: 2014<br />
+	 * &nbsp;&nbsp;&nbsp;&nbsp;DueDate: 152362727<br />
+//	 * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Day: 14<br />
+//	 * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Month: 09<br />
+//	 * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Year: 2014<br />
 	 * &nbsp;&nbsp;&nbsp;&nbsp;Owner: 3515-gaey3-61-61-ah-36-ahh<br />
 	 * </p>
 	 * @param section The section to load from
@@ -65,15 +65,12 @@ public class LeaseLand extends Land {
 
 		LeaseLand lease = new LeaseLand(region);
 		
-		if (section.contains("Owner") && section.contains("DueDate") && section.contains("DueDate.Day") && section.contains("DueDate.Month") && section.contains("DueDate.Year")) {
-			//due date information!
+//		if (section.contains("Owner") && section.contains("DueDate") && section.contains("DueDate.Day") && section.contains("DueDate.Month") && section.contains("DueDate.Year")) {
+		if (section.contains("Owner") && section.contains("DueDate")) {
+		    //due date information!
 			Calendar calendar = Calendar.getInstance();
 			calendar.clear();
-			calendar.set(
-					section.getInt("Date.Year"),
-					section.getInt("Date.Month"),
-					section.getInt("Date.Day")
-					);
+			calendar.setTime(new Date(section.getLong("DueDate")));
 			lease.dueDate = calendar.getTime();
 			
 			DefaultDomain dom = new DefaultDomain();
@@ -111,7 +108,6 @@ public class LeaseLand extends Land {
 		
 		config.createSection("Block1");
 		config.createSection("Block2");
-		config.createSection("DueDate");
 		
 		config.set("Block1.X", this.land.getMinimumPoint().getBlockX());
 		config.set("Block1.Y", this.land.getMinimumPoint().getBlockY());
@@ -122,9 +118,14 @@ public class LeaseLand extends Land {
 		config.set("Block2.Z", this.land.getMaximumPoint().getBlockZ());
 		
 		if (dueDate != null) {
-			config.set("DueDate.Day", dueDate.getDay());
-			config.set("DueDate.Month", dueDate.getMonth());
-			config.set("DueDate.Year", dueDate.getYear());
+			Calendar cal = Calendar.getInstance();
+			cal.clear();
+			cal.setTime(dueDate);
+//			config.set("DueDate.Day", cal.get(Calendar.DATE));
+//			config.set("DueDate.Month", cal.get(Calendar.MONTH));
+//			config.set("DueDate.Year", cal.get(Calendar.YEAR));
+//			config.set("DueDate.Time", cal.get(Calendar.));
+			config.set("DueDate", cal.getTime().getTime());
 			
 			//set owner as just first uuid
 			config.set("Owner", land.getOwners().getUniqueIds().iterator().next().toString());
