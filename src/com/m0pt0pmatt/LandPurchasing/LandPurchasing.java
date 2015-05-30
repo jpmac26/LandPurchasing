@@ -2,6 +2,7 @@ package com.m0pt0pmatt.LandPurchasing;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 import java.util.UUID;
 
 import net.milkbowl.vault.economy.Economy;
@@ -18,6 +19,7 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.m0pt0pmatt.LandPurchasing.Scheduling.Scheduler;
 import com.m0pt0pmatt.LandPurchasing.managers.FlagManager;
 import com.m0pt0pmatt.LandPurchasing.managers.LandManager;
 import com.m0pt0pmatt.LandPurchasing.managers.LandService;
@@ -178,6 +180,9 @@ public class LandPurchasing extends JavaPlugin{
 			count ++;
 		}
 		getLogger().info("Loaded " + count + " plots!");
+		
+		getLogger().info("Starting scheduler");
+		Scheduler.getScheduler();
 	}
 	
 	@Override

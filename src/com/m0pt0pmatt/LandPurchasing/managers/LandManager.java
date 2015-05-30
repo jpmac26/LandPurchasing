@@ -668,7 +668,8 @@ public class LandManager {
 		
 		plot.setDueDate(null);
 		plot.getRegion().setOwners(new DefaultDomain());
-		leasePlots.remove(plot);
+		
+		//TODO fancy sign stuff
 		
 	}
 	

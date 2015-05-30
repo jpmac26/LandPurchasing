@@ -21,7 +21,7 @@ public class Scheduler extends BukkitRunnable {
 	
 	private static Scheduler sched = null;
 	
-	public Scheduler getScheduler() {
+	public static Scheduler getScheduler() {
 		if (sched == null) {
 			sched = new Scheduler();
 		}
@@ -59,7 +59,7 @@ public class Scheduler extends BukkitRunnable {
 			if (plot.getDueDate() != null) {
 				//it's being leased. Check the date
 				
-				if (!plot.getDueDate().before(now)) {
+				if (plot.getDueDate().before(now)) {
 					//D: oh no! They're late!
 
 					Player owner = Bukkit.getPlayer(plot.getRegion().getOwners().getUniqueIds().iterator().next());
