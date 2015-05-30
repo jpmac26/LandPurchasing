@@ -8,6 +8,7 @@ import net.milkbowl.vault.economy.Economy;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -408,11 +409,16 @@ public class LandPurchasing extends JavaPlugin{
 				meta.addPage("Listed herein are all available plots to lease.\n" +  
 						"Each plot lists its address and the price.\n\n" + 
 						"All leases are offered in\n" +  
-						ChatColor.DARK_RED + "2 week" + ChatColor.BLACK + "\nperiods.");
+						ChatColor.DARK_RED + "2 week" + ChatColor.BLACK + "\nperiods.\n\n"
+								+ (landManager.getAvailableLeasePlots().isEmpty() ? 
+								ChatColor.DARK_RED + "There are no available plots to lease!" + ChatColor.BLACK : 
+								"There are " + ChatColor.DARK_GREEN + 
+										landManager.getAvailableLeasePlots().size() + 
+								ChatColor.BLACK + " plots available to lease!"));
 				
 				if (!landManager.getAvailableLeasePlots().isEmpty()) {
 					for (LeaseLand plot : landManager.getAvailableLeasePlots()) {
-						BlockVector b = plot.getRegion().getMinimumPoint();
+						Location b = plot.getSignLocation();
 						meta.addPage(ChatColor.DARK_BLUE + plot.getID() + ChatColor.BLACK + "\n" +
 								ChatColor.DARK_GREEN + "$" + plot.getCost() + ChatColor.BLACK + "\n" +
 								"-----\n\n" + 
