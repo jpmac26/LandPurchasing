@@ -52,3 +52,6 @@ commands:
     listleases:
         description: Displays all plots available to lease
         usage: /listleases
+    listings:
+        description: Gives a book with all the available plots listed
+        usage: /listings

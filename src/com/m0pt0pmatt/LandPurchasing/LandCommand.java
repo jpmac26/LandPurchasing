@@ -16,6 +16,7 @@ public enum LandCommand {
 	SELLLAND("sellland"),
 	LISTLAND("listland"),
 	LISTLEASE("listleases"),
+	LISTINGS("listings"),
 	FLAGLAND("flagland"),
 	LANDINFO("landinfo"),
 	ADDMEMBERLAND("addmember"),

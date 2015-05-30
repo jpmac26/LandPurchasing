@@ -2,18 +2,20 @@ package com.m0pt0pmatt.LandPurchasing;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Date;
 import java.util.UUID;
 
 import net.milkbowl.vault.economy.Economy;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.ServicePriority;
@@ -377,6 +379,50 @@ public class LandPurchasing extends JavaPlugin{
 			}
 			else{
 				landManager.listRegions(sender);
+			}
+			return true;
+		}
+		
+		/**
+		 * Player would like the local listings
+		 */
+		if (cmd.getName().equalsIgnoreCase(LandCommand.LISTINGS.getCommand())) {
+			if (args.length != 0){
+				sender.sendMessage("Wrong number of arguments.");
+				return false;
+			}
+			if (sender instanceof Player) {
+				
+				if (((Player) sender).getInventory().firstEmpty() == -1) {
+					sender.sendMessage("There is no room in your inventory!");
+					return true;
+				}
+				
+				ItemStack book = new ItemStack(Material.WRITTEN_BOOK);
+				BookMeta meta = (BookMeta) book.getItemMeta();
+				
+				meta.setDisplayName("Local Listings");
+				meta.setTitle("Lease Listings");
+				meta.setAuthor("");
+				
+				meta.addPage("Listed herein are all available plots to lease.", 
+						"Each plot lists its address and the price.", "", 
+						"All leases are offered in ", 
+						ChatColor.DARK_RED + "2 week" + ChatColor.RESET + " periods.");
+				
+				if (!landManager.getAvailableLeasePlots().isEmpty()) {
+					for (LeaseLand plot : landManager.getAvailableLeasePlots()) {
+						meta.addPage(plot.getID(), 
+								"$" + plot.getCost());
+					}
+				}
+				
+				Player player = (Player) sender;
+				
+				player.getInventory().addItem(book);
+				
+			} else {
+				sender.sendMessage("Only players can use this command!");
 			}
 			return true;
 		}
