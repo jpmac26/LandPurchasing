@@ -502,6 +502,8 @@ public class LandManager {
 			return;
 		}
 		
+		
+		
 		//don't need to check balance, cause it's being set up to lease
 		//need to make sure there doesn't exist a region there though!
 		if (!selectionEmpty(rm, b1, b2)) {
@@ -529,9 +531,10 @@ public class LandManager {
 		}
 		
 		//registere plot with our own database
-		leasePlots.add(new LeaseLand(region));
+		leasePlots.add(new LeaseLand(((Player) sender).getLocation(), region));
 		
-		sender.sendMessage("Leased plot has been successfully registered!");
+		sender.sendMessage("Leased plot has been successfully registered with sign location"
+				+ "where you're standing!");
 		
 	}
 	

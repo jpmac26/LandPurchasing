@@ -5,8 +5,10 @@ import java.util.Date;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+
 
 
 //import com.m0pt0pmatt.LandPurchasing.Scheduling.Date;
@@ -22,6 +24,8 @@ import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
 public class LeaseLand extends Land {
 	
 	private Date dueDate;
+	
+	private Location signLoc;
 	
 	/**
 	 * Creates a new LeaseLand object from the passed configuration section<br />
@@ -41,21 +45,27 @@ public class LeaseLand extends Land {
 //	 * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Year: 2014<br />
 	 * &nbsp;&nbsp;&nbsp;&nbsp;Owner: 3515-gaey3-61-61-ah-36-ahh<br />
 	 * </p>
+	 * @param name The name of the section, for region ID purposes
 	 * @param section The section to load from
 	 * @return The resultant LeaseLand object, or <i>null</i> if there was an error
 	 */
 	public static LeaseLand fromConfig(String name, ConfigurationSection section) {
-		if (section == null) {
+		if (section == null || name == null || name.trim().isEmpty()) {
 			return null;
 		}
 		
 		//TODO check and make sure that region doesn't conflict with any others!
+		
 		
 		//load up info from config
 		BlockVector b1, b2;
 		b1 = new BlockVector(section.getInt("Block1.X"), section.getInt("Block1.Y"), section.getInt("Block1.Z"));
 		b2 = new BlockVector(section.getInt("Block2.X"), section.getInt("Block2.Y"), section.getInt("Block2.Z"));
 		
+		Location signLoc = new Location(Bukkit.getWorld("Homeworld"), 
+				section.getInt("Sign.X"),
+				section.getInt("Sign.Y"),
+				section.getInt("Sign.Z"));
 		
 		ProtectedCuboidRegion region = new ProtectedCuboidRegion(name, b1, b2);
 		
@@ -63,7 +73,7 @@ public class LeaseLand extends Land {
 		LandPurchasing.wgplugin.getRegionManager(Bukkit.getWorld("Homeworld")).addRegion(region);
 		
 
-		LeaseLand lease = new LeaseLand(region);
+		LeaseLand lease = new LeaseLand(signLoc, region);
 		
 //		if (section.contains("Owner") && section.contains("DueDate") && section.contains("DueDate.Day") && section.contains("DueDate.Month") && section.contains("DueDate.Year")) {
 		if (section.contains("Owner") && section.contains("DueDate")) {
@@ -83,9 +93,10 @@ public class LeaseLand extends Land {
 	}
 	
 	
-	public LeaseLand(ProtectedCuboidRegion region) {
+	public LeaseLand(Location signLocation, ProtectedCuboidRegion region) {
 		super(region);
 		dueDate = null;
+		this.signLoc = signLocation;
 	}
 	
 	public Date getDueDate() {
@@ -94,6 +105,10 @@ public class LeaseLand extends Land {
 	
 	public void setDueDate(Date date) {
 		dueDate = date;
+	}
+	
+	public Location getSignLocation() {
+		return this.signLoc;
 	}
 	
 	/**
@@ -108,6 +123,7 @@ public class LeaseLand extends Land {
 		
 		config.createSection("Block1");
 		config.createSection("Block2");
+		config.createSection("Sign");
 		
 		config.set("Block1.X", this.land.getMinimumPoint().getBlockX());
 		config.set("Block1.Y", this.land.getMinimumPoint().getBlockY());
@@ -116,6 +132,10 @@ public class LeaseLand extends Land {
 		config.set("Block2.X", this.land.getMaximumPoint().getBlockX());
 		config.set("Block2.Y", this.land.getMaximumPoint().getBlockY());
 		config.set("Block2.Z", this.land.getMaximumPoint().getBlockZ());
+		
+		config.set("Sign.X", signLoc.getBlockX());
+		config.set("Sign.Y", signLoc.getBlockY());
+		config.set("Sign.Z", signLoc.getBlockZ());
 		
 		if (dueDate != null) {
 			Calendar cal = Calendar.getInstance();
