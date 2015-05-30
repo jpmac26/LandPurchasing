@@ -640,7 +640,7 @@ public class LandManager {
 		cal.clear();
 		cal.setTime(new Date());
 		cal.add(Calendar.DATE, 14);
-		if (cal.getTime().compareTo(plot.getDueDate()) >= 0) {
+		if (cal.getTime().compareTo(plot.getDueDate()) < 0) {
 			//this is: "is 14 days from now the same or LATER than the due date?
 			//e.g. is the due date already more than 14 days away (can't renew)
 			sender.sendMessage("You cannot renew your lease, as your current due-date is still"
