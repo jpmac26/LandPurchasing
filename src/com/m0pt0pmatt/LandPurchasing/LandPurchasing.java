@@ -382,6 +382,20 @@ public class LandPurchasing extends JavaPlugin{
 		}
 		
 		/**
+		 * player wants to see what plots are available to lease
+		 */
+		if(cmd.getName().equalsIgnoreCase(LandCommand.LISTLEASE.getCommand())){
+			if (args.length != 0){
+				sender.sendMessage("Wrong number of arguments.");
+				return false;
+			}
+			else{
+				landManager.listLeaseProperties(sender);
+			}
+			return true;
+		}
+		
+		/**
 		 * player wants to change the flags on their land
 		 */
 		if(cmd.getName().equalsIgnoreCase(LandCommand.FLAGLAND.getCommand())){

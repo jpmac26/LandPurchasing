@@ -49,3 +49,6 @@ commands:
     renewlease:
         description: Renews a current lease for an additional period
         usage: /renewlease [plot_name]
+    listleases:
+        description: Displays all plots available to lease
+        usage: /listleases
