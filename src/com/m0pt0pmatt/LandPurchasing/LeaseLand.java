@@ -1,10 +1,13 @@
 package com.m0pt0pmatt.LandPurchasing;
 
+import java.util.Calendar;
+import java.util.Date;
+
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-import com.m0pt0pmatt.LandPurchasing.Scheduling.Date;
+//import com.m0pt0pmatt.LandPurchasing.Scheduling.Date;
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
 
@@ -60,11 +63,14 @@ public class LeaseLand extends Land {
 		
 		if (section.contains("Date") && section.contains("Date.Day") && section.contains("Date.Month") && section.contains("Date.Year")) {
 			//due date information!
-			lease.dueDate = new Date(
-					section.getInt("Date.Day"),
+			Calendar calendar = Calendar.getInstance();
+			calendar.clear();
+			calendar.set(
+					section.getInt("Date.Year"),
 					section.getInt("Date.Month"),
-					section.getInt("Date.Year")
+					section.getInt("Date.Day")
 					);
+			lease.dueDate = calendar.getTime();
 		}
 		//else do nothing, as assumed no date info on creation
 		
