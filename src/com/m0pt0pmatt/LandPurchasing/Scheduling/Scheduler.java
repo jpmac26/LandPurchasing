@@ -31,7 +31,7 @@ public class Scheduler extends BukkitRunnable {
 	
 	private Scheduler() {
 		//run self now and every 30 minutes
-		Bukkit.getScheduler().runTaskTimerAsynchronously(LandPurchasing.plugin, this, 0l, 1000 * 60 * 30);
+		Bukkit.getScheduler().runTaskTimerAsynchronously(LandPurchasing.plugin, this, 0l, 20 * 60 * 30);
 	}
 	
 	@Override
