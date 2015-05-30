@@ -187,6 +187,8 @@ public class LandManager {
 				//make sure plot is a valid land plot
 				if (plotName.startsWith(((Player) sender).getUniqueId().toString())){
 					regionList.add(plotName.substring(((Player) sender).getUniqueId().toString().length() + 2, plotName.length()));
+				} else {
+					regionList.add("Lease: " + plotName);
 				}
 			}
 		}
