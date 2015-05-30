@@ -463,7 +463,7 @@ public class LandPurchasing extends JavaPlugin{
 				if (region.isOwner(new BukkitPlayer(wgplugin, player))) {
 					player.sendMessage("You are currently leasing this property.");
 					player.sendMessage("Your lease expires on " + plot.getDueDate());
-					player.sendMessage("    To renew your lease, use the /leaseland command");
+					player.sendMessage("    To renew your lease, use the /renewlease command");
 					
 					player.sendMessage("Members: ");
 					for (String name : region.getMembers().getPlayers()) {
