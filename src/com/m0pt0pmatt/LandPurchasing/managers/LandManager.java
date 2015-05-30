@@ -660,6 +660,18 @@ public class LandManager {
 		
 	}
 	
+	/**
+	 * Removes the held lease on the provided plot
+	 * @param plot
+	 */
+	public void releaseLease(LeaseLand plot) {
+		
+		plot.setDueDate(null);
+		plot.getRegion().setOwners(new DefaultDomain());
+		leasePlots.remove(plot);
+		
+	}
+	
 	
 	
 	
