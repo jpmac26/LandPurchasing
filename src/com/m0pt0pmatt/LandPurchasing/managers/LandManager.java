@@ -1,6 +1,7 @@
 package com.m0pt0pmatt.LandPurchasing.managers;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -566,6 +567,7 @@ public class LandManager {
 		//set new due date to this date + 14 days D:
 		Calendar cal = Calendar.getInstance();
 		cal.clear();
+		cal.setTime(new Date());
 		cal.add(Calendar.DATE, 14);
 		plot.setDueDate(cal.getTime());
 
