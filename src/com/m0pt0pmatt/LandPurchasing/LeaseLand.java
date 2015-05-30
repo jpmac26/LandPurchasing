@@ -132,4 +132,20 @@ public class LeaseLand extends Land {
 		}
 		return config;
 	}
+	
+	@Override
+	public String toString() {
+		return "Lease Plot [" + this.getID()+ "]";
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (!(o instanceof LeaseLand)) {
+			return false;
+		}
+		
+		LeaseLand other = (LeaseLand) o;
+		
+		return (other.getID().equals(getID()));
+	}
 }
