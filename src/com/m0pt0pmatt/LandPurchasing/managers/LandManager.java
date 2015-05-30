@@ -1,5 +1,6 @@
 package com.m0pt0pmatt.LandPurchasing.managers;
 
+import java.util.Calendar;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -539,14 +540,38 @@ public class LandManager {
 			return;
 		}
 		
+		LeaseLand plot = getPlot(name);
+		if (plot == null) {
+			sender.sendMessage("Unable to locate lease plot with that name!");
+			return;
+		}
 		
-		//what do we need to do? 
-				/*
-				 * well we now need to make sure that the passed ID is a real one,
-				 * and that it's for lease. also check money requirements.
-				 * Then sub the money, generate a new due-date, and add the person as an
-				 * owner 
-				 */
+		if (plot.getDueDate() != null) {
+			sender.sendMessage("That plot is already being leased out, and is not available!");
+			return;
+		}
+		
+		int cost = (plot.getCost() / 2);
+		if (money < cost) {
+			sender.sendMessage("You do not have sufficient funds to lease this property!");
+			return;
+		}
+		
+		//passed checks, lease it out!
+		LandPurchasing.economy.withdrawPlayer((OfflinePlayer) sender, cost);
+		DefaultDomain domain = new DefaultDomain();
+		domain.addPlayer( ((Player) sender).getUniqueId()   );
+		region.setOwners(domain);
+		
+		//set new due date to this date + 14 days D:
+		Calendar cal = Calendar.getInstance();
+		cal.clear();
+		cal.add(Calendar.DATE, 14);
+		plot.setDueDate(cal.getTime());
+
+		//congratulate new lease owner
+		sender.sendMessage("Congratulations! You are now leasing this property!");
+		sender.sendMessage("Your lease expires on " + cal.getTime());
 		
 	}
 	
