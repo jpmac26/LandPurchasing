@@ -98,9 +98,12 @@ public class LeaseLand extends Land {
 			dom.addPlayer(UUID.fromString(section.getString("Owner")));
 			lease.land.setOwners(dom);
 			
-			lease.updateSign();
 		}
 		//else do nothing, as assumed no date info on creation
+		
+		
+
+		lease.updateSign();
 		
 		return lease;
 	}
@@ -176,9 +179,13 @@ public class LeaseLand extends Land {
 	 * Checks current status and puts up or takes down the lease sign to reflect it
 	 */
 	private void updateSign() {
+
+		Location tmpLoc = signLoc.clone().add(0.0, 1.0, 0.0);
+		tmpLoc.getBlock().setType(Material.AIR);
+		signLoc.getBlock().setType(Material.AIR);
+		
 		if (dueDate == null) {
 			signLoc.getBlock().setType(Material.GOLD_BLOCK);
-			Location tmpLoc = signLoc.clone().add(0.0, 1.0, 0.0);
 			Block block = tmpLoc.getBlock();
 			block.setType(Material.SIGN_POST);
 			Sign sign = (Sign) block.getState();
@@ -191,11 +198,6 @@ public class LeaseLand extends Land {
 			sign.setData(sobj);
 			
 			sign.update();
-		} else {
-			Location tmpLoc = signLoc.clone().add(0.0, 1.0, 0.0);
-			tmpLoc.getBlock().setType(Material.AIR);
-			signLoc.getBlock().setType(Material.AIR);
-			
 		}
 	}
 	
