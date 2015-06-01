@@ -546,13 +546,17 @@ public class LandPurchasing extends JavaPlugin{
 			
 			//do quick check that it isn't spawn: this should be the only time that there
 			//are overlapping regions: leased land in spawn
-			if (regions.getRegions().size() > 1 && region.getId().equalsIgnoreCase("spawn")) {
-				region = (ProtectedRegion) regions.getRegions().toArray()[1];
-			} else {
-				//the player is in spawn only
-				player.sendMessage("You are currently in the spawn, est. 2015");
-				return true;
+			if (region.getId().equalsIgnoreCase("spawn")) {
+				if (regions.getRegions().size() > 1 ) {
+					region = (ProtectedRegion) regions.getRegions().toArray()[1];
+				} 
+				else {
+					//the player is in spawn only
+					player.sendMessage("You are currently in the spawn, est. 2015");
+					return true;
+				}
 			}
+				
 			
 			//two modes: it's a leased property (no UUID header) or it's a player's property
 			//if it's a leased property, display different stats and don't substring the name
