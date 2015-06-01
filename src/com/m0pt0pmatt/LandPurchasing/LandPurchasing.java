@@ -177,6 +177,11 @@ public class LandPurchasing extends JavaPlugin{
 			//create a LeaseLand object from the configuration section
 			LeaseLand plot = LeaseLand.fromConfig(plotName, plotList.getConfigurationSection(plotName));
 			
+			if (plot == null) {
+				getLogger().warning("Unable to properly load plot: " + plotName);
+				continue;
+			}
+			
 			//check and make sure this region doesn't intersect any others
 			//TODO add check here? What about spawn region?
 			
@@ -215,10 +220,10 @@ public class LandPurchasing extends JavaPlugin{
 			e.printStackTrace();
 		}
 		
-		getLogger().info("Removing leased plots...");
-		for (LeaseLand land : landManager.getLeasePlots()) {
-			rm.removeRegion(land.land.getId());
-		}
+//		getLogger().info("Removing leased plots...");
+//		for (LeaseLand land : landManager.getLeasePlots()) {
+//			rm.removeRegion(land.land.getId());
+//		}
 	}
 	
 	/**
@@ -538,6 +543,20 @@ public class LandPurchasing extends JavaPlugin{
 			}
 			//theoretically, there will only be one region. we're just going to grab the first under the first
 			region = (ProtectedRegion) regions.getRegions().toArray()[0];
+			
+			//do quick check that it isn't spawn: this should be the only time that there
+			//are overlapping regions: leased land in spawn
+			if (region.getId().equalsIgnoreCase("spawn")) {
+				if (regions.getRegions().size() > 1 ) {
+					region = (ProtectedRegion) regions.getRegions().toArray()[1];
+				} 
+				else {
+					//the player is in spawn only
+					player.sendMessage("You are currently in the spawn, est. 2015");
+					return true;
+				}
+			}
+				
 			
 			//two modes: it's a leased property (no UUID header) or it's a player's property
 			//if it's a leased property, display different stats and don't substring the name

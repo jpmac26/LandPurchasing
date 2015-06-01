@@ -2,6 +2,7 @@ package com.m0pt0pmatt.LandPurchasing;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Map;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -15,16 +16,12 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 
-
-
-
-
-
-
 //import com.m0pt0pmatt.LandPurchasing.Scheduling.Date;
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldguard.domains.DefaultDomain;
+import com.sk89q.worldguard.protection.flags.Flag;
 import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
+import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 /**
  * Holds information about a plot of land that is able to be or is being leased out.<br />
@@ -70,19 +67,26 @@ public class LeaseLand extends Land {
 		
 		
 		//load up info from config
-		BlockVector b1, b2;
-		b1 = new BlockVector(section.getInt("Block1.X"), section.getInt("Block1.Y"), section.getInt("Block1.Z"));
-		b2 = new BlockVector(section.getInt("Block2.X"), section.getInt("Block2.Y"), section.getInt("Block2.Z"));
-		
+//		BlockVector b1, b2;
+//		b1 = new BlockVector(section.getInt("Block1.X"), section.getInt("Block1.Y"), section.getInt("Block1.Z"));
+//		b2 = new BlockVector(section.getInt("Block2.X"), section.getInt("Block2.Y"), section.getInt("Block2.Z"));
+//		
 		Location signLoc = new Location(Bukkit.getWorld("Homeworld"), 
 				section.getInt("Sign.X"),
 				section.getInt("Sign.Y"),
 				section.getInt("Sign.Z"));
 		
-		ProtectedCuboidRegion region = new ProtectedCuboidRegion(name, b1, b2);
+//		ProtectedCuboidRegion region = new ProtectedCuboidRegion(name, b1, b2);
+		//get region from WG
+		ProtectedCuboidRegion region = (ProtectedCuboidRegion) LandPurchasing.wgplugin.getRegionManager(Bukkit.getWorld("Homeworld")).getRegion(name);
+		
+		if (region == null) {
+			LandPurchasing.plugin.getLogger().info("Unable to locate leased-region: " + name);
+			return null;
+		}
 		
 		
-		LandPurchasing.wgplugin.getRegionManager(Bukkit.getWorld("Homeworld")).addRegion(region);
+//		LandPurchasing.wgplugin.getRegionManager(Bukkit.getWorld("Homeworld")).addRegion(region);
 		
 
 		LeaseLand lease = new LeaseLand(signLoc, region);
@@ -96,9 +100,12 @@ public class LeaseLand extends Land {
 			calendar.setTime(new Date(section.getLong("DueDate")));
 			lease.dueDate = calendar.getTime();
 			
-			DefaultDomain dom = new DefaultDomain();
-			dom.addPlayer(UUID.fromString(section.getString("Owner")));
-			lease.land.setOwners(dom);
+//			DefaultDomain dom = new DefaultDomain();
+//			dom.addPlayer(UUID.fromString(section.getString("Owner")));
+//			lease.land.setOwners(dom);
+			
+			//set up priority
+			lease.land.setPriority(900);
 			
 		}
 		//else do nothing, as assumed no date info on creation
@@ -144,17 +151,17 @@ public class LeaseLand extends Land {
 	public ConfigurationSection toConfig() {
 		ConfigurationSection config = new YamlConfiguration();
 		
-		config.createSection("Block1");
-		config.createSection("Block2");
+//		config.createSection("Block1");
+//		config.createSection("Block2");
 		config.createSection("Sign");
 		
-		config.set("Block1.X", this.land.getMinimumPoint().getBlockX());
-		config.set("Block1.Y", this.land.getMinimumPoint().getBlockY());
-		config.set("Block1.Z", this.land.getMinimumPoint().getBlockZ());
-
-		config.set("Block2.X", this.land.getMaximumPoint().getBlockX());
-		config.set("Block2.Y", this.land.getMaximumPoint().getBlockY());
-		config.set("Block2.Z", this.land.getMaximumPoint().getBlockZ());
+//		config.set("Block1.X", this.land.getMinimumPoint().getBlockX());
+//		config.set("Block1.Y", this.land.getMinimumPoint().getBlockY());
+//		config.set("Block1.Z", this.land.getMinimumPoint().getBlockZ());
+//
+//		config.set("Block2.X", this.land.getMaximumPoint().getBlockX());
+//		config.set("Block2.Y", this.land.getMaximumPoint().getBlockY());
+//		config.set("Block2.Z", this.land.getMaximumPoint().getBlockZ());
 		
 		config.set("Sign.X", signLoc.getBlockX());
 		config.set("Sign.Y", signLoc.getBlockY());
@@ -173,6 +180,7 @@ public class LeaseLand extends Land {
 			
 			//set owner as just first uuid
 			config.set("Owner", land.getOwners().getUniqueIds().iterator().next().toString());
+			
 		}
 		return config;
 	}

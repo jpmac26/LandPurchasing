@@ -616,6 +616,10 @@ public class LandManager {
 		cal.setTime(new Date());
 		cal.add(Calendar.DATE, 14);
 		plot.setDueDate(cal.getTime());
+		
+		//set up worldguard priority to override spawn protection and default flags
+		plot.getRegion().setPriority(900);
+		LandPurchasing.flagManager.setDefaultFlags(plot.getRegion());
 
 		//congratulate new lease owner
 		sender.sendMessage("Congratulations! You are now leasing this property!");
@@ -713,7 +717,8 @@ public class LandManager {
 		
 		plot.setDueDate(null);
 		plot.getRegion().setOwners(new DefaultDomain());
-		
+		LandPurchasing.flagManager.setDefaultFlags(plot.getRegion());
+		plot.getRegion().setPriority(-900);
 		//TODO fancy sign stuff
 		
 	}
