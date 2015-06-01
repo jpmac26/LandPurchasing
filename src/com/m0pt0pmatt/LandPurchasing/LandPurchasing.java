@@ -544,6 +544,12 @@ public class LandPurchasing extends JavaPlugin{
 			//theoretically, there will only be one region. we're just going to grab the first under the first
 			region = (ProtectedRegion) regions.getRegions().toArray()[0];
 			
+			//do quick check that it isn't spawn: this should be the only time that there
+			//are overlapping regions: leased land in spawn
+			if (regions.getRegions().size() > 1 && region.getId().equalsIgnoreCase("spawn")) {
+				region = (ProtectedRegion) regions.getRegions().toArray()[1];
+			}
+			
 			//two modes: it's a leased property (no UUID header) or it's a player's property
 			//if it's a leased property, display different stats and don't substring the name
 			if (LandPurchasing.landManager.getPlot(region.getId()) != null) {
