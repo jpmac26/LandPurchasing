@@ -215,10 +215,10 @@ public class LandPurchasing extends JavaPlugin{
 			e.printStackTrace();
 		}
 		
-		getLogger().info("Removing leased plots...");
-		for (LeaseLand land : landManager.getLeasePlots()) {
-			rm.removeRegion(land.land.getId());
-		}
+//		getLogger().info("Removing leased plots...");
+//		for (LeaseLand land : landManager.getLeasePlots()) {
+//			rm.removeRegion(land.land.getId());
+//		}
 	}
 	
 	/**
