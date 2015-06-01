@@ -177,6 +177,11 @@ public class LandPurchasing extends JavaPlugin{
 			//create a LeaseLand object from the configuration section
 			LeaseLand plot = LeaseLand.fromConfig(plotName, plotList.getConfigurationSection(plotName));
 			
+			if (plot == null) {
+				getLogger().warning("Unable to properly load plot: " + plotName);
+				continue;
+			}
+			
 			//check and make sure this region doesn't intersect any others
 			//TODO add check here? What about spawn region?
 			
