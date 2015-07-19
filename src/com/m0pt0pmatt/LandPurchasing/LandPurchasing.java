@@ -235,6 +235,7 @@ public class LandPurchasing extends JavaPlugin{
 	    
 	    // WorldGuard may not be loaded
 	    if (plugin == null || !(plugin instanceof WorldGuardPlugin)) {
+	    	Bukkit.getLogger().warning("LandPurchasing failed to hook into WorldGuard plugin!");
 	    	return null; // Maybe you want throw an exception instead
 	    }
 	    
@@ -250,6 +251,7 @@ public class LandPurchasing extends JavaPlugin{
 	 
 	    // WorldGuard may not be loaded
 	    if (plugin == null || !(plugin instanceof WorldEditPlugin)) {
+	    	Bukkit.getLogger().warning("LandPurchasing failed to hook into WorldEdit plugin!");
 	        return null; // Maybe you want throw an exception instead
 	    }
 	 
