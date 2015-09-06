@@ -15,7 +15,6 @@ import org.bukkit.entity.Player;
 import com.m0pt0pmatt.LandPurchasing.LandPurchasing;
 import com.m0pt0pmatt.LandPurchasing.flags.CustomFlag;
 import com.m0pt0pmatt.LandPurchasing.flags.LandFlag;
-
 import com.sk89q.worldguard.protection.flags.BooleanFlag;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.flags.Flag;
@@ -152,13 +151,13 @@ public class FlagManager {
 		}
 		
 		//check if the player can afford changing this flag
-		if (!LandPurchasing.economy.has((OfflinePlayer) sender, (int)cost)){
+		if (!LandPurchasing.economy.has((OfflinePlayer) sender, cost)){
 			sender.sendMessage("You do not have the required funds. Changing this flag costs $" + (int)cost);
 			return false;
 		}
 		
 		//withdraw the funds from the player to the server
-		LandPurchasing.economy.withdrawPlayer((OfflinePlayer) sender, (int)cost);
+		LandPurchasing.economy.withdrawPlayer((OfflinePlayer) sender, cost);
 		//LandPurchasing.economy.depositPlayer("__Server", (int)cost);
 		//removed cause yolo   -sm
 		
