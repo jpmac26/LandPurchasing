@@ -57,7 +57,7 @@ public class FlagManager {
 		flags.put(DefaultFlag.PVP.getName(), new LandFlag(DefaultFlag.PVP, true, 0.1));
 		flags.put(DefaultFlag.ENDERPEARL.getName(), new LandFlag(DefaultFlag.ENDERPEARL, false, 0));
 		flags.put(DefaultFlag.PISTONS.getName(), new LandFlag(DefaultFlag.PISTONS, false, 0));
-		flags.put(DefaultFlag.USE.getName(), new LandFlag(DefaultFlag.USE, false, 0));
+		flags.put(DefaultFlag.USE.getName(), new LandFlag(DefaultFlag.USE, true, 0));
 
 		//possibly misunderstood flags, message won't be sent to owner alone
 		//TODO:make these work how we want. Going to require custom flags
