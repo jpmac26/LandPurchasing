@@ -7,7 +7,6 @@ import java.util.Set;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import com.m0pt0pmatt.LandPurchasing.LandPurchasing;
 import com.m0pt0pmatt.LandPurchasing.LeaseLand;
@@ -18,7 +17,7 @@ import com.sk89q.worldguard.domains.DefaultDomain;
  * @author Skyler
  *
  */
-public class Scheduler extends BukkitRunnable {
+public class Scheduler implements Runnable {
 	
 	private static Scheduler sched = null;
 	

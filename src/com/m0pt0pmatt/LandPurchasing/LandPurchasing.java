@@ -32,7 +32,6 @@ import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldguard.bukkit.BukkitPlayer;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
-import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 /**
@@ -200,7 +199,7 @@ public class LandPurchasing extends JavaPlugin{
 		//remove all leased plot locations, so we can recreate them on next enable and not
 		//create overlapping regions!
 		
-		RegionManager rm = wgplugin.getRegionManager(Bukkit.getWorld("Homeworld"));
+//		RegionManager rm = wgplugin.getRegionManager(Bukkit.getWorld("Homeworld"));
 		
 		//save out config!
 		getLogger().info("Saving plot information...");

@@ -8,7 +8,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import com.m0pt0pmatt.LandPurchasing.LandPurchasing;
 import com.sk89q.worldedit.BlockVector;
@@ -20,7 +19,7 @@ import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
  * @author Skyler
  *
  */
-public class AreaView extends BukkitRunnable {
+public class AreaView implements Runnable {
 	
 	private List<Block> blocks;
 	

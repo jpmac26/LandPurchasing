@@ -2,9 +2,6 @@ package com.m0pt0pmatt.LandPurchasing;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Map;
-import java.util.UUID;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -16,12 +13,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 
-//import com.m0pt0pmatt.LandPurchasing.Scheduling.Date;
-import com.sk89q.worldedit.BlockVector;
-import com.sk89q.worldguard.domains.DefaultDomain;
-import com.sk89q.worldguard.protection.flags.Flag;
 import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
-import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 /**
  * Holds information about a plot of land that is able to be or is being leased out.<br />

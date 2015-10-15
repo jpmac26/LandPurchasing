@@ -99,7 +99,8 @@ public class LandListener implements Listener{
 		//get the region manager for the world
 		RegionManager regionManager = LandPurchasing.wgplugin.getRegionManager(world);
 		
-		Location retractedBlockLocation = event.getRetractLocation();
+		Location initialBlockLocation = event.getBlocks().get(0).getLocation();
+		Location retractedBlockLocation = initialBlockLocation.subtract(event.getBlock().getLocation().getDirection());
 		
 		Location pistonLocation = event.getBlock().getLocation();
 		

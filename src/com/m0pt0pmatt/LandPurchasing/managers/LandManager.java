@@ -16,6 +16,7 @@ import org.bukkit.entity.Player;
 import com.m0pt0pmatt.LandPurchasing.LandPurchasing;
 import com.m0pt0pmatt.LandPurchasing.LeaseLand;
 import com.m0pt0pmatt.LandPurchasing.Effects.AreaView;
+import com.m0pt0pmatt.bettereconomy.accounts.UUIDFetcher;
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.bukkit.selections.Selection;
@@ -67,6 +68,11 @@ public class LandManager {
 		leasePlots.add(plot);
 	}
 	
+	public static OfflinePlayer GetPlayerFromName(String name){
+		
+		return null;
+	}
+	
 	
 	/**
 	 * Adds a member to a region
@@ -75,52 +81,55 @@ public class LandManager {
 	 * @param regionName
 	 */
 	public void addMember(CommandSender sender, String regionName, String memberName){
-		
-		//make sure the command executor is a player
-		if(!(sender instanceof Player)){
-			sender.sendMessage("Sorry, only players can execute this command");
-			return;
+		try {
+			//make sure the command executor is a player
+			if(!(sender instanceof Player)){
+				sender.sendMessage("Sorry, only players can execute this command");
+				return;
+			}
+			
+			if (UUIDFetcher.getUUIDOf(memberName) == null) {
+				//player isn't currently online with that name
+				sender.sendMessage("This player is not currently online!");
+				return;
+			}
+			
+			//assuming if they have an account, they are a valid identity to add as a member
+			//no way currently around deprecated call, as it's not the player to be added calling the method
+			if(!LandPurchasing.economy.hasAccount(Bukkit.getOfflinePlayer(UUIDFetcher.getUUIDOf(memberName)))){
+				sender.sendMessage(memberName + " is not an existing player");
+				return;
+			}
+			
+			//get the region manager for the homeworld
+			RegionManager rm = LandPurchasing.wgplugin.getRegionManager(Bukkit.getWorld("HomeWorld"));
+			if (rm == null){
+				sender.sendMessage("No region manager for the homeworld");
+				return;
+			}
+			
+			//get the region in question
+			ProtectedRegion region = rm.getRegion(((Player) sender).getUniqueId().toString() + "__" + regionName);
+			if (region == null){
+				sender.sendMessage("No such region was found.");
+				return;
+			}
+			
+			//make sure the command executor is an owner of the plot
+			if(!region.isOwner(new BukkitPlayer(wgplugin, (Player) sender))){
+				sender.sendMessage("You are not the owner of the specified region");
+				return;
+			}
+			
+			//add the player
+			DefaultDomain d = region.getMembers();
+			d.addPlayer(Bukkit.getPlayer(UUIDFetcher.getUUIDOf(memberName)).getUniqueId());
+			region.setMembers(d);
+			
+			sender.sendMessage(memberName + " is now a member of the plot " + regionName);
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-		
-		if (Bukkit.getPlayer(memberName) == null) {
-			//player isn't currently online with thtat name
-			sender.sendMessage("This player is not currently online!");
-			return;
-		}
-		
-		//assuming if they have an account, they are a valid identity to add as a member
-		//no way currently around deprecated call, as it's not the player to be added calling the method
-		if(!LandPurchasing.economy.hasAccount(Bukkit.getOfflinePlayer(memberName))){
-			sender.sendMessage(memberName + " is not an existing player");
-			return;
-		}
-		
-		//get the region manager for the homeworld
-		RegionManager rm = LandPurchasing.wgplugin.getRegionManager(Bukkit.getWorld("HomeWorld"));
-		if (rm == null){
-			sender.sendMessage("No region manager for the homeworld");
-			return;
-		}
-		
-		//get the region in question
-		ProtectedRegion region = rm.getRegion(((Player) sender).getUniqueId().toString() + "__" + regionName);
-		if (region == null){
-			sender.sendMessage("No such region was found.");
-			return;
-		}
-		
-		//make sure the command executor is an owner of the plot
-		if(!region.isOwner(new BukkitPlayer(wgplugin, (Player) sender))){
-			sender.sendMessage("You are not the owner of the specified region");
-			return;
-		}
-		
-		//add the player
-		DefaultDomain d = region.getMembers();
-		d.addPlayer(Bukkit.getPlayer(memberName).getUniqueId());
-		region.setMembers(d);
-		
-		sender.sendMessage(memberName + " is now a member of the plot " + regionName);
 	}
 	
 	/**
@@ -158,18 +167,26 @@ public class LandManager {
 		}
 		
 		//player that they are trying to remove isn't online.
-		if (Bukkit.getPlayer(memberName) == null) {
-			sender.sendMessage("That player is not currently online.");
-			return;
+		try {
+			if (Bukkit.getPlayer(UUIDFetcher.getUUIDOf(memberName)) == null) {
+				sender.sendMessage("That player is not currently online.");
+				return;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		
 		//get the members of the plot
 		DefaultDomain d = region.getMembers();
 		
 		//check if the player actually was a member
-		if(!d.contains(new BukkitPlayer(wgplugin, Bukkit.getPlayer(memberName)))){
-			sender.sendMessage("Player " + memberName + " is not a member of this region");
-			return;
+		try {
+			if(!d.contains(new BukkitPlayer(wgplugin, Bukkit.getPlayer(UUIDFetcher.getUUIDOf(memberName))))){
+				sender.sendMessage("Player " + memberName + " is not a member of this region");
+				return;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		
 		//remove the member from the plot
