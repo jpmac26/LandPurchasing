@@ -15,7 +15,6 @@ import org.bukkit.entity.Player;
 import com.m0pt0pmatt.LandPurchasing.LandPurchasing;
 import com.m0pt0pmatt.LandPurchasing.flags.CustomFlag;
 import com.m0pt0pmatt.LandPurchasing.flags.LandFlag;
-
 import com.sk89q.worldguard.protection.flags.BooleanFlag;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.flags.Flag;
@@ -58,7 +57,7 @@ public class FlagManager {
 		flags.put(DefaultFlag.PVP.getName(), new LandFlag(DefaultFlag.PVP, true, 0.1));
 		flags.put(DefaultFlag.ENDERPEARL.getName(), new LandFlag(DefaultFlag.ENDERPEARL, false, 0));
 		flags.put(DefaultFlag.PISTONS.getName(), new LandFlag(DefaultFlag.PISTONS, false, 0));
-		flags.put(DefaultFlag.USE.getName(), new LandFlag(DefaultFlag.USE, false, 0));
+		flags.put(DefaultFlag.USE.getName(), new LandFlag(DefaultFlag.USE, true, 0));
 
 		//possibly misunderstood flags, message won't be sent to owner alone
 		//TODO:make these work how we want. Going to require custom flags
@@ -152,13 +151,13 @@ public class FlagManager {
 		}
 		
 		//check if the player can afford changing this flag
-		if (!LandPurchasing.economy.has((OfflinePlayer) sender, (int)cost)){
+		if (!LandPurchasing.economy.has((OfflinePlayer) sender, cost)){
 			sender.sendMessage("You do not have the required funds. Changing this flag costs $" + (int)cost);
 			return false;
 		}
 		
 		//withdraw the funds from the player to the server
-		LandPurchasing.economy.withdrawPlayer((OfflinePlayer) sender, (int)cost);
+		LandPurchasing.economy.withdrawPlayer((OfflinePlayer) sender, cost);
 		//LandPurchasing.economy.depositPlayer("__Server", (int)cost);
 		//removed cause yolo   -sm
 		

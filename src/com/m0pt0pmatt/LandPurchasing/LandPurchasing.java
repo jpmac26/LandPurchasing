@@ -4,8 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
 
-import net.milkbowl.vault.economy.Economy;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -18,7 +16,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -28,6 +25,8 @@ import com.m0pt0pmatt.LandPurchasing.managers.FlagManager;
 import com.m0pt0pmatt.LandPurchasing.managers.LandManager;
 import com.m0pt0pmatt.LandPurchasing.managers.LandService;
 import com.m0pt0pmatt.LandPurchasing.managers.LandServiceProvider;
+import com.m0pt0pmatt.bettereconomy.BetterEconomy;
+import com.m0pt0pmatt.bettereconomy.EconomyManager;
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldguard.bukkit.BukkitPlayer;
@@ -63,7 +62,7 @@ public class LandPurchasing extends JavaPlugin{
 	/**
 	 * The Vault Economy
 	 */
-	public static Economy economy = null;
+	public static EconomyManager economy = null;
 	
 	/**
 	 * The WorldGuard hook
@@ -235,6 +234,7 @@ public class LandPurchasing extends JavaPlugin{
 	    
 	    // WorldGuard may not be loaded
 	    if (plugin == null || !(plugin instanceof WorldGuardPlugin)) {
+	    	Bukkit.getLogger().warning("LandPurchasing failed to hook into WorldGuard plugin!");
 	    	return null; // Maybe you want throw an exception instead
 	    }
 	    
@@ -250,6 +250,7 @@ public class LandPurchasing extends JavaPlugin{
 	 
 	    // WorldGuard may not be loaded
 	    if (plugin == null || !(plugin instanceof WorldEditPlugin)) {
+	    	Bukkit.getLogger().warning("LandPurchasing failed to hook into WorldEdit plugin!");
 	        return null; // Maybe you want throw an exception instead
 	    }
 	 
@@ -262,12 +263,12 @@ public class LandPurchasing extends JavaPlugin{
 	 */
 	public static boolean setupEconomy()
     {
-        RegisteredServiceProvider<Economy> economyProvider = Bukkit.getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
-        if (economyProvider != null) {
-            economy = economyProvider.getProvider();
-        }
-
-        return (economy != null);
+		if (Bukkit.getPluginManager().isPluginEnabled("BetterEconomy")) {
+			economy = BetterEconomy.economy;
+			return true;
+		}
+		else
+			return false;
     }
 	
 	/**

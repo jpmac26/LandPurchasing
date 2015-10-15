@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.Set;
 
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -62,9 +63,18 @@ public class Scheduler extends BukkitRunnable {
 				if (plot.getDueDate().before(now)) {
 					//D: oh no! They're late!
 
-					Player owner = Bukkit.getPlayer(plot.getRegion().getOwners().getUniqueIds().iterator().next());
+					OfflinePlayer owner = Bukkit.getOfflinePlayer(plot.getRegion().getOwners().getUniqueIds().iterator().next());
+					
+					if (owner == null) {
+						LandPurchasing.plugin.getLogger().warning("Encountered null player data when "
+								+ "performing lookup on land: " + plot.getRegion().getId());
+						continue;
+					}
+					
+					
 					if (owner.isOnline()) {
-						owner.sendMessage("Your lease for the plot [" + plot.getID() + "] just expired!");
+						Player play = owner.getPlayer();
+						play.sendMessage("Your lease for the plot [" + plot.getID() + "] just expired!");
 					}
 					
 					plot.setDueDate(null);
@@ -78,9 +88,17 @@ public class Scheduler extends BukkitRunnable {
 				//warn them within two days
 				if (warningDate.getTime().after(plot.getDueDate())) {
 					//less than two days till it expires!
-					Player owner = Bukkit.getPlayer(plot.getRegion().getOwners().getUniqueIds().iterator().next());
+					OfflinePlayer owner = Bukkit.getOfflinePlayer(plot.getRegion().getOwners().getUniqueIds().iterator().next());
+					
+					if (owner == null) {
+						LandPurchasing.plugin.getLogger().warning("Encountered null player data when "
+								+ "performing lookup on land: " + plot.getRegion().getId());
+						continue;
+					}
+					
 					if (owner.isOnline()) {
-						owner.sendMessage("Reminder: Your lease for the plot [" + plot.getID() + 
+						Player play = owner.getPlayer();
+						play.sendMessage("Reminder: Your lease for the plot [" + plot.getID() + 
 								"] expires " + plot.getDueDate());
 					}
 					//TODO if we get a mail system, add a mail message?
