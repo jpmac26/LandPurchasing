@@ -87,7 +87,7 @@ public class Land {
 
 	/**
 	 * Method for generating the cost of a selection of this piece of land
-	 * @return the cost of the given dimentions
+	 * @return the cost of the given dimensions
 	 */
 	public int getCost(){
 		int length = land.getMaximumPoint().getBlockX() - land.getMinimumPoint().getBlockX() + 1;

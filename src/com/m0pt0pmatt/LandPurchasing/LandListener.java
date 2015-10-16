@@ -8,11 +8,14 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.BlockPistonRetractEvent;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import com.m0pt0pmatt.LandPurchasing.flags.CustomFlag;
+import com.m0pt0pmatt.bettereconomy.io.EconomyLoadEvent;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.sk89q.worldguard.protection.flags.StateFlag.State;
@@ -24,12 +27,24 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
  * @author Matthew
  *
  */
-public class LandListener implements Listener{
-
+public class LandListener implements Listener {
+	
+	JavaPlugin plugin;
+	
+	public LandListener(JavaPlugin plugin) {
+		this.plugin = plugin;
+	}
+	
+	@EventHandler(priority = EventPriority.HIGH)
+	public void onEconomyLoad(EconomyLoadEvent event) {
+		if (LandPurchasing.economy == null && event.getEconomy() != null) {
+			LandPurchasing.economy = event.getEconomy();
+			plugin.getLogger().info("Successfully hooked into BetterEconomy!");
+		}
+	}
 	
 	@EventHandler
-	public void onPistonExtend(BlockPistonExtendEvent event){
-		
+	public void onPistonExtend(BlockPistonExtendEvent event) {
 		World world = event.getBlock().getWorld();
 		
 		//get the region manager for the world
@@ -45,7 +60,7 @@ public class LandListener implements Listener{
 		int x = 0;
 		int y = 0;
 		int z = 0;
-		switch(event.getDirection()){
+		switch(event.getDirection()) {
 		case NORTH:
 			z = -1;
 			break;
@@ -68,18 +83,18 @@ public class LandListener implements Listener{
 			break;
 		}
 		
-		for (Block block: pushedBlocks){
+		for (Block block : pushedBlocks) {
 			v = new Vector(block.getX() + x, block.getY() + y, block.getZ() + z);
 			Set<String> blockSet = new HashSet<String> (regionManager.getApplicableRegionsIDs(v));
 			
-			if (!blockSet.equals(pistonSet)){
+			if (!blockSet.equals(pistonSet)) {
 				
-				for (String regionName: blockSet){
+				for (String regionName : blockSet) {
 										
 					ProtectedRegion region = regionManager.getRegion(regionName);
 					State state = region.getFlag(new StateFlag("outside-pistons", false));
 					
-					if (state == null || state.equals(State.DENY)){
+					if (state == null || state.equals(State.DENY)) {
 						event.setCancelled(true);
 						return;
 					}
@@ -90,7 +105,7 @@ public class LandListener implements Listener{
 	}
 	
 	@EventHandler
-	public void onPistonRetract(BlockPistonRetractEvent event){
+	public void onPistonRetract(BlockPistonRetractEvent event) {
 				
 		if (!event.isSticky()) return;
 				
@@ -110,26 +125,26 @@ public class LandListener implements Listener{
 		v = new Vector(pistonLocation.getX(), pistonLocation.getY(), pistonLocation.getZ());
 		Set<String> oldSet = new HashSet<String> (regionManager.getApplicableRegionsIDs(v));
 		
-		if (!newSet.equals(oldSet)){
+		if (!newSet.equals(oldSet)) {
 			
-			for (String regionName: newSet){
+			for (String regionName : newSet) {
 				
 				ProtectedRegion region = regionManager.getRegion(regionName);
 				
 				Object state = region.getFlag(CustomFlag.OUTSIDEPISTONS.getFlag().getFlag());
 								
-				if (state == null || state.equals(State.DENY)){
+				if (state == null || state.equals(State.DENY)) {
 					event.setCancelled(true);
 					return;
 				}
 			}
-			for (String regionName: oldSet){
+			for (String regionName : oldSet) {
 				
 				ProtectedRegion region = regionManager.getRegion(regionName);
 				
 				Object state = region.getFlag(CustomFlag.OUTSIDEPISTONS.getFlag().getFlag());
 								
-				if (state == null || state.equals(State.DENY)){
+				if (state == null || state.equals(State.DENY)) {
 					event.setCancelled(true);
 					return;
 				}

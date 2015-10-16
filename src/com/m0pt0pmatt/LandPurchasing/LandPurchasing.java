@@ -38,9 +38,9 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
  * LandPurchasing is a plugin which allows players to purchase custom plots of protected land
  * LandPurchasing uses WorldGuard as its backend.
  * 
- * @author Matthew Broomfield, Lucas Stuyvesant, and Skyler Manzanares
+ * @author Matthew Broomfield, Lucas Stuyvesant, Skyler Manzanares, and James Pelster
  */
-public class LandPurchasing extends JavaPlugin{
+public class LandPurchasing extends JavaPlugin {
 
 	/**
 	 * The LandManager performs creation, deletion, and permission operations on
@@ -81,7 +81,7 @@ public class LandPurchasing extends JavaPlugin{
 	
 	private static YamlConfiguration config;
 	
-	private static final double version = 1.23;
+	private static final double version = 0.76;
 	
 	/**
 	 * Load up configuration
@@ -100,7 +100,7 @@ public class LandPurchasing extends JavaPlugin{
 			config = new YamlConfiguration();
 			config.set("version", LandPurchasing.version);
 			
-			//creat empty plot section
+			//create empty plot section
 			config.createSection("LeasePlots");
 			
 			return;
@@ -128,11 +128,15 @@ public class LandPurchasing extends JavaPlugin{
 	/**
 	 * Hook into other plugins
 	 */
-	public void onEnable(){
+	public void onEnable() {
 		plugin = this;
 		weplugin = getWorldEdit();
 		wgplugin = getWorldGuard();
-		setupEconomy();
+		if (setupEconomy() == false) {
+			getLogger().info("Unable to hook BetterEconomy yet, will try waiting for an EconomyLoadEvent.");
+		} else {
+			getLogger().info("Successfully hooked into BetterEconomy!");
+		}
 		
 		//set up the landmanager
 		landManager = new LandManager(this, wgplugin);
@@ -141,7 +145,7 @@ public class LandPurchasing extends JavaPlugin{
 		flagManager = new FlagManager();
 		
 		//set up land listener
-		landListener = new LandListener();
+		landListener = new LandListener(this);
 		Bukkit.getPluginManager().registerEvents(landListener, this);
 				
 		//setup land service
