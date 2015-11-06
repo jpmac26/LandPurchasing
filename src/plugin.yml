@@ -55,3 +55,6 @@ commands:
     listings:
         description: Gives a book with all the available plots listed
         usage: /listings
+    landhelp:
+        description: Gives a book with help about using land commands
+        usage: /landhelp
