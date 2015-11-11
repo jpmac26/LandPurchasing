@@ -52,6 +52,7 @@ public class FlagManager {
 		flags.put(DefaultFlag.CHEST_ACCESS.getName(), new LandFlag(DefaultFlag.CHEST_ACCESS, false, 0));
 		flags.put(DefaultFlag.DESTROY_VEHICLE.getName(), new LandFlag(DefaultFlag.DESTROY_VEHICLE, false, 0));
 		flags.put(DefaultFlag.PLACE_VEHICLE.getName(), new LandFlag(DefaultFlag.PLACE_VEHICLE, false, 0));
+		flags.put(DefaultFlag.RIDE.getName(), new LandFlag(DefaultFlag.RIDE, false, 0));
 		
 		//other stateFlags
 		flags.put(DefaultFlag.PVP.getName(), new LandFlag(DefaultFlag.PVP, true, 0.1));
@@ -88,6 +89,8 @@ public class FlagManager {
 		region.setFlag(DefaultFlag.CHEST_ACCESS, StateFlag.State.ALLOW);
 		region.setFlag(DefaultFlag.ENTITY_ITEM_FRAME_DESTROY, StateFlag.State.DENY);
 		region.setFlag(DefaultFlag.ENTITY_PAINTING_DESTROY, StateFlag.State.DENY);
+		region.setFlag(DefaultFlag.RIDE, StateFlag.State.ALLOW);
+		region.setFlag(DefaultFlag.INTERACT, StateFlag.State.ALLOW);
 		region.setFlag((StateFlag)CustomFlag.OUTSIDEPISTONS.getFlag().getFlag(), StateFlag.State.DENY);	
 		//region.setFlag((StateFlag)CustomFlag.BANKFLAG.getFlag().getFlag(), StateFlag.State.DENY);	
 	}

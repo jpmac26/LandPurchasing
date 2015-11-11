@@ -25,6 +25,7 @@ import com.m0pt0pmatt.LandPurchasing.managers.FlagManager;
 import com.m0pt0pmatt.LandPurchasing.managers.LandManager;
 import com.m0pt0pmatt.LandPurchasing.managers.LandService;
 import com.m0pt0pmatt.LandPurchasing.managers.LandServiceProvider;
+import com.m0pt0pmatt.LandPurchasing.utils.HelpBook;
 import com.m0pt0pmatt.bettereconomy.BetterEconomy;
 import com.m0pt0pmatt.bettereconomy.EconomyManager;
 import com.sk89q.worldedit.BlockVector;
@@ -472,6 +473,16 @@ public class LandPurchasing extends JavaPlugin {
 			return true;
 		}
 		
+		if (cmd.getName().equalsIgnoreCase(LandCommand.LANDHELP.getCommand())) {
+			if (!(sender instanceof Player)) {
+				sender.sendMessage("You must be a player to use this command.");
+				return true;
+			}
+			
+			HelpBook.givePlayerBook((Player) sender);
+			return true;
+		}
+		
 		/**
 		 * player wants to change the flags on their land
 		 */
@@ -482,8 +493,10 @@ public class LandPurchasing extends JavaPlugin {
 					sender.sendMessage("Use any one of these flags with flagland:");
 					//To avoid spam, we construct one big string
 					String msg = " ";
+					boolean trig = false;
 					for (String flag : flagManager.getFlags()) {
-						msg = msg + flag + "   ";
+						msg = (trig ? ChatColor.YELLOW : ChatColor.GOLD)
+								+ msg + flag + "   ";
 					}
 					sender.sendMessage(msg);
 					return true;
