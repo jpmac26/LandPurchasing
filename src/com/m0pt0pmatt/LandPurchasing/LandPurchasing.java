@@ -492,9 +492,10 @@ public class LandPurchasing extends JavaPlugin{
 					String msg = " ";
 					boolean trig = false;
 					for (String flag : flagManager.getFlags()) {
-						msg = (trig ? ChatColor.YELLOW : ChatColor.GOLD)
-								+ msg + flag + "   ";
+						msg = msg + (trig ? ChatColor.DARK_PURPLE : ChatColor.GOLD) + flag + "   ";
+						trig = !trig;
 					}
+					msg += ChatColor.RESET;
 					sender.sendMessage(msg);
 					return true;
 				}
