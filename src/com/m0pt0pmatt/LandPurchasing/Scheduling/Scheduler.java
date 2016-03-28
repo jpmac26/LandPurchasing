@@ -7,7 +7,6 @@ import java.util.Set;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import com.m0pt0pmatt.LandPurchasing.LandPurchasing;
 import com.m0pt0pmatt.LandPurchasing.LeaseLand;
@@ -18,7 +17,7 @@ import com.sk89q.worldguard.domains.DefaultDomain;
  * @author Skyler
  *
  */
-public class Scheduler extends BukkitRunnable {
+public class Scheduler implements Runnable {
 	
 	private static Scheduler sched = null;
 	
@@ -32,7 +31,7 @@ public class Scheduler extends BukkitRunnable {
 	
 	private Scheduler() {
 		//run self now and every 30 minutes
-		Bukkit.getScheduler().runTaskTimerAsynchronously(LandPurchasing.plugin, this, 0l, 20 * 60 * 30);
+		Bukkit.getScheduler().runTaskTimer(LandPurchasing.plugin, this, 0l, 20 * 60 * 30);
 	}
 	
 	@Override
@@ -71,14 +70,11 @@ public class Scheduler extends BukkitRunnable {
 						continue;
 					}
 					
+//					Bukkit.getPluginManager().callEvent(
+//							new LeaseExpirationEvent(plot));
+					LandPurchasing.landManager.releaseLease(plot);
 					
-					if (owner.isOnline()) {
-						Player play = owner.getPlayer();
-						play.sendMessage("Your lease for the plot [" + plot.getID() + "] just expired!");
-					}
-					
-					plot.setDueDate(null);
-					plot.getRegion().setOwners(new DefaultDomain());
+					//plot.getRegion().setOwners(new DefaultDomain());
 					
 					
 					continue;
