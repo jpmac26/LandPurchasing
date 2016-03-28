@@ -5,8 +5,8 @@ import java.util.Date;
 import java.util.Set;
 
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import com.m0pt0pmatt.LandPurchasing.LandPurchasing;
 import com.m0pt0pmatt.LandPurchasing.LeaseLand;
@@ -17,7 +17,7 @@ import com.sk89q.worldguard.domains.DefaultDomain;
  * @author Skyler
  *
  */
-public class Scheduler extends BukkitRunnable {
+public class Scheduler implements Runnable {
 	
 	private static Scheduler sched = null;
 	
@@ -31,7 +31,7 @@ public class Scheduler extends BukkitRunnable {
 	
 	private Scheduler() {
 		//run self now and every 30 minutes
-		Bukkit.getScheduler().runTaskTimerAsynchronously(LandPurchasing.plugin, this, 0l, 20 * 60 * 30);
+		Bukkit.getScheduler().runTaskTimer(LandPurchasing.plugin, this, 0l, 20 * 60 * 30);
 	}
 	
 	@Override
@@ -62,13 +62,19 @@ public class Scheduler extends BukkitRunnable {
 				if (plot.getDueDate().before(now)) {
 					//D: oh no! They're late!
 
-					Player owner = Bukkit.getPlayer(plot.getRegion().getOwners().getUniqueIds().iterator().next());
-					if (owner.isOnline()) {
-						owner.sendMessage("Your lease for the plot [" + plot.getID() + "] just expired!");
+					OfflinePlayer owner = Bukkit.getOfflinePlayer(plot.getRegion().getOwners().getUniqueIds().iterator().next());
+					
+					if (owner == null) {
+						LandPurchasing.plugin.getLogger().warning("Encountered null player data when "
+								+ "performing lookup on land: " + plot.getRegion().getId());
+						continue;
 					}
 					
-					plot.setDueDate(null);
-					plot.getRegion().setOwners(new DefaultDomain());
+//					Bukkit.getPluginManager().callEvent(
+//							new LeaseExpirationEvent(plot));
+					LandPurchasing.landManager.releaseLease(plot);
+					
+					//plot.getRegion().setOwners(new DefaultDomain());
 					
 					
 					continue;
@@ -78,9 +84,17 @@ public class Scheduler extends BukkitRunnable {
 				//warn them within two days
 				if (warningDate.getTime().after(plot.getDueDate())) {
 					//less than two days till it expires!
-					Player owner = Bukkit.getPlayer(plot.getRegion().getOwners().getUniqueIds().iterator().next());
+					OfflinePlayer owner = Bukkit.getOfflinePlayer(plot.getRegion().getOwners().getUniqueIds().iterator().next());
+					
+					if (owner == null) {
+						LandPurchasing.plugin.getLogger().warning("Encountered null player data when "
+								+ "performing lookup on land: " + plot.getRegion().getId());
+						continue;
+					}
+					
 					if (owner.isOnline()) {
-						owner.sendMessage("Reminder: Your lease for the plot [" + plot.getID() + 
+						Player play = owner.getPlayer();
+						play.sendMessage("Reminder: Your lease for the plot [" + plot.getID() + 
 								"] expires " + plot.getDueDate());
 					}
 					//TODO if we get a mail system, add a mail message?
