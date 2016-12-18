@@ -10,9 +10,12 @@ import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import com.griefcraft.lwc.LWC;
+import com.griefcraft.model.Protection;
 import com.m0pt0pmatt.LandPurchasing.LandPurchasing;
 import com.m0pt0pmatt.LandPurchasing.LeaseLand;
 import com.m0pt0pmatt.LandPurchasing.Effects.AreaView;
@@ -34,12 +37,15 @@ public class LandManager {
 	private LandPurchasing plugin;
 	private WorldGuardPlugin wgplugin;
 	
+	private LWC lwc;
+	
 	private Set<LeaseLand> leasePlots;
 	
 	
 	public LandManager(LandPurchasing plugin, WorldGuardPlugin wgplugin) {
 		this.plugin = plugin;
 		this.wgplugin = wgplugin;
+		this.lwc = LWC.getInstance();
 		
 		leasePlots = new HashSet<LeaseLand>();
 	}
@@ -80,6 +86,7 @@ public class LandManager {
 	 * @param memberName
 	 * @param regionName
 	 */
+	@SuppressWarnings("deprecation")
 	public void addMember(CommandSender sender, String regionName, String memberName){
 		try {
 			//make sure the command executor is a player
@@ -736,21 +743,35 @@ public class LandManager {
 		plot.getRegion().setOwners(new DefaultDomain());
 		LandPurchasing.flagManager.setDefaultFlags(plot.getRegion());
 		plot.getRegion().setPriority(-900);
-		//TODO fancy sign stuff
+
+		//Go through and update locks and stuff from LWC
+		BlockVector min = plot.getRegion().getMinimumPoint(),
+				max = plot.getRegion().getMaximumPoint();
+		
+		
+		
+		if (lwc == null) {
+			return;
+		}
+		
+		World world = plot.getSignLocation().getWorld();
+		
+		for (int i = min.getBlockX(); i <= max.getBlockX(); i++) 
+		for (int j = min.getBlockY(); j <= max.getBlockY(); j++)
+		for (int k = min.getBlockZ(); k <= max.getBlockZ(); k++) {
+			Protection p = lwc.findProtection(world, i, j, k);
+			if (p == null) {
+				continue;
+			}
+			
+			p.remove();
+		}
+		
 		
 	}
 	
 	
 	
-	
-	
-	
-	//TODO scheduled lease checks!!!!!
-	//     remove owner, due date null!
-	//TODO list leased land
-	//TODO pay lease command?
-	//TODO lease book!
-	//TODO lease sign!
 	
 	
 	

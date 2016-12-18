@@ -204,7 +204,7 @@ public class LandPurchasing extends JavaPlugin {
 		//remove all leased plot locations, so we can recreate them on next enable and not
 		//create overlapping regions!
 		
-//		RegionManager rm = wgplugin.getRegionManager(Bukkit.getWorld("Homeworld"));
+		//RegionManager rm = wgplugin.getRegionManager(Bukkit.getWorld("Homeworld"));
 		
 		//save out config!
 		getLogger().info("Saving plot information...");
@@ -495,9 +495,10 @@ public class LandPurchasing extends JavaPlugin {
 					String msg = " ";
 					boolean trig = false;
 					for (String flag : flagManager.getFlags()) {
-						msg = (trig ? ChatColor.YELLOW : ChatColor.GOLD)
-								+ msg + flag + "   ";
+						msg = msg + (trig ? ChatColor.DARK_PURPLE : ChatColor.GOLD) + flag + "   ";
+						trig = !trig;
 					}
+					msg += ChatColor.RESET;
 					sender.sendMessage(msg);
 					return true;
 				}

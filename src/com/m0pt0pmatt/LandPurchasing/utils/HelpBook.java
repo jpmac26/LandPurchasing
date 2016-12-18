@@ -2,11 +2,14 @@ package com.m0pt0pmatt.LandPurchasing.utils;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map.Entry;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
+import org.bukkit.inventory.meta.ItemMeta;
 
 /**
  * A helpbook container class with all the text for the helpbook.
@@ -15,6 +18,14 @@ import org.bukkit.inventory.meta.BookMeta;
  *
  */
 public class HelpBook {
+	
+	private static final String bookTitle = "Land Help Book";
+	
+	private static final String bookAuthor = "Dove-Breneth III";
+	
+	private static final String addMessage = "A help book titled " + bookTitle + " has been added to your inventory!";
+	
+	private static final String replaceMessage = "Your land help book has been replaced.";
 	
 	private static List<String> pages = Arrays.asList(
 			"Land Purchasing: A beginner's guide",
@@ -37,10 +48,23 @@ public class HelpBook {
 		ItemStack book = new ItemStack(Material.WRITTEN_BOOK);
 		BookMeta meta = (BookMeta) book.getItemMeta();
 		meta.setPages(pages);
-		meta.setDisplayName("Land Help Book");
-		meta.setAuthor("Dove-Breneth III");
+		meta.setDisplayName(bookTitle);
+		meta.setAuthor(bookAuthor);
 		book.setItemMeta(meta);
 		
+		Inventory inv = player.getInventory();
+		BookMeta itemMeta;
+		
+		for (Entry<Integer, ? extends ItemStack> item : inv.all(Material.WRITTEN_BOOK).entrySet()) {
+			itemMeta = (BookMeta) item.getValue().getItemMeta();
+			if (itemMeta.getDisplayName().equals(bookTitle) && itemMeta.getAuthor().equals(bookAuthor)) {
+				inv.setItem(item.getKey(), book);
+				player.sendMessage(replaceMessage);
+				return;
+			}
+		}
+		
+		player.sendMessage(addMessage);
 		player.getInventory().addItem(book);
 	}
 	

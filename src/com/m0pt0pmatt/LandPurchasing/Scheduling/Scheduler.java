@@ -31,7 +31,7 @@ public class Scheduler implements Runnable {
 	
 	private Scheduler() {
 		//run self now and every 30 minutes
-		Bukkit.getScheduler().runTaskTimerAsynchronously(LandPurchasing.plugin, this, 0l, 20 * 60 * 30);
+		Bukkit.getScheduler().runTaskTimer(LandPurchasing.plugin, this, 0l, 20 * 60 * 30);
 	}
 	
 	@Override
@@ -70,14 +70,11 @@ public class Scheduler implements Runnable {
 						continue;
 					}
 					
+//					Bukkit.getPluginManager().callEvent(
+//							new LeaseExpirationEvent(plot));
+					LandPurchasing.landManager.releaseLease(plot);
 					
-					if (owner.isOnline()) {
-						Player play = owner.getPlayer();
-						play.sendMessage("Your lease for the plot [" + plot.getID() + "] just expired!");
-					}
-					
-					plot.setDueDate(null);
-					plot.getRegion().setOwners(new DefaultDomain());
+					//plot.getRegion().setOwners(new DefaultDomain());
 					
 					
 					continue;

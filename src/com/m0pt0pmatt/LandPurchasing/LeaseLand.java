@@ -2,16 +2,15 @@ package com.m0pt0pmatt.LandPurchasing;
 
 import java.util.Calendar;
 import java.util.Date;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
-
 
 import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
 
@@ -116,6 +115,7 @@ public class LeaseLand extends Land {
 		setSignLocation(signLocation);
 		
 		updateSign();
+		
 	}
 	
 	public Date getDueDate() {
@@ -183,14 +183,11 @@ public class LeaseLand extends Land {
 	private void updateSign() {
 
 		Location tmpLoc = signLoc.clone().add(0.0, 1.0, 0.0);
-		tmpLoc.getBlock().setType(Material.AIR);
-		signLoc.getBlock().setType(Material.AIR);
-		
+				
 		if (dueDate == null) {
 			signLoc.getBlock().setType(Material.GOLD_BLOCK);
-			Block block = tmpLoc.getBlock();
-			block.setType(Material.SIGN_POST);
-			Sign sign = (Sign) block.getState();
+			tmpLoc.getBlock().setType(Material.SIGN_POST);
+			Sign sign = (Sign) tmpLoc.getBlock().getState();
 			sign.setLine(0, getID());
 			sign.setLine(1, ChatColor.DARK_GREEN + "$" + getCost() + ChatColor.BLACK);
 			sign.setLine(3, ChatColor.DARK_RED + "<RClick Me>" + ChatColor.BLACK);
@@ -201,6 +198,9 @@ public class LeaseLand extends Land {
 			sign.setData(sobj);
 			
 			sign.update();
+		} else {
+			tmpLoc.getBlock().setType(Material.AIR);
+			signLoc.getBlock().setType(Material.AIR);
 		}
 	}
 	
